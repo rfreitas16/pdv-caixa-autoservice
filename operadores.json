@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "nome": "Administrador",
+    "usuario": "admin",
+    "pin": "1234",
+    "nivel": "gerente",
+    "ativo": true
+  },
+  {
+    "id": 2,
+    "nome": "Caixa 01",
+    "usuario": "caixa01",
+    "pin": "2580",
+    "nivel": "operador",
+    "ativo": true
+  },
+  {
+    "id": 3,
+    "nome": "Caixa 02",
+    "usuario": "caixa02",
+    "pin": "4321",
+    "nivel": "operador",
+    "ativo": true
+  }
+]

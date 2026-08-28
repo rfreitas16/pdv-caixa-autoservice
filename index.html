@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Caixa de Mercado</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="card">
+        <h1>Passe o Produto no Leitor</h1>
+
+        <!-- <div class="scanner">
+          <button id="abrirScanner">📷 Abrir Scanner</button>
+
+          <button id="fecharScanner">❌ Fechar Scanner</button>
+
+          <div id="reader"></div>
+        </div> -->
+
+        <div class="scanner">
+          <input
+            type="text"
+            id="codigoBarras"
+            placeholder="Digite o código de barras"
+            autocomplete="off"
+            maxlength="13"
+          />
+        </div>
+        
+        <div id="modal-scanner" >
+          <input class="scan"
+            type="text"
+            id="codigoBarrasFocus"
+            placeholder="Passe o código de barras"
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- <div id="produtos" class="produtos"></div> -->
+        <h2>Carrinho</h2>
+        <div class="card-products">
+          <div class="cart">
+            <table>
+              <thead>
+                <tr class="thead-fixed">
+                  <th>Produto</th>
+                  <th>Preco Unidade</th>
+                  <th>Qtd</th>
+                  <th>Subtotal</th>
+                  <th>Ação</th>
+                  7892840823108<br>
+                  7891000000001
+                </tr>
+              </thead>
+
+              <tbody id="carrinho"></tbody>
+            </table>
+
+
+          </div>
+        </div>
+        <div class="total">
+          Total: R$
+          <span id="total">0.00</span>
+        </div>
+      </div>
+
+      <div class="area-buttons">
+        <div class="align-content-btn">
+        <button id="btn-codbarnum"><i class="fa-solid fa-barcode"></i>Digitar Código</button>
+        <button id="btn-qtd"><i class="fa-solid fa-plus"></i>Digitar Quantidade</button>
+        </div>
+            <button id="btn-help"><i class="fa-solid fa-exclamation"></i>Solicitar Ajuda</button>
+        </div>
+
+      </div>
+
+           <div id="pinpadModalProd" class="pinpad-modal" tabindex="-1">
+      <div class="pinpad">
+        <h2>Digite o codio de Barras</h2>
+
+        <input type="number" id="codeNumber" readonly />
+
+        <div class="teclado">
+          <button onclick="digitarCod('1')">1</button>
+          <button onclick="digitarCod('2')">2</button>
+          <button onclick="digitarCod('3')">3</button>
+
+          <button onclick="digitarCod('4')">4</button>
+          <button onclick="digitarCod('5')">5</button>
+          <button onclick="digitarCod('6')">6</button>
+
+          <button onclick="digitarCod('7')">7</button>
+          <button onclick="digitarCod('8')">8</button>
+          <button onclick="digitarCod('9')">9</button>
+
+          <button onclick="apagarCod()">←</button>
+          <button onclick="digitarCod('0')">0</button>
+          <button onclick="confirmarCod()">OK</button>
+        </div>
+
+        <button class="cancelarCod" onclick="fecharPinpad()">Cancelar</button>
+      </div>
+            </div>
+
+    <!-- ------------------------------ -->
+
+               <div id="pinpadModalQtd" class="pinpad-modal" tabindex="-1">
+      <div class="pinpad">
+        <h2>Digite a Quantidade desejada</h2>
+
+        <input type="number" id="productQtd" readonly />
+
+        <div class="teclado">
+          <button onclick="digitarQtd('1')">1</button>
+          <button onclick="digitarQtd('2')">2</button>
+          <button onclick="digitarQtd('3')">3</button>
+
+          <button onclick="digitarQtd('4')">4</button>
+          <button onclick="digitarQtd('5')">5</button>
+          <button onclick="digitarQtd('6')">6</button>
+
+          <button onclick="digitarQtd('7')">7</button>
+          <button onclick="digitarQtd('8')">8</button>
+          <button onclick="digitarQtd('9')">9</button>
+
+          <button onclick="apagarQtd()">←</button>
+          <button onclick="digitarQtd('0')">0</button>
+          <button onclick="EnviarQtd()">OK</button>
+        </div>
+
+        <button class="cancelarQtd" onclick="fecharPinpad()">Cancelar</button>
+      </div>
+    </div>
+
+    </div>
+
+
+    <div class="container">
+      <div class="card-footer">
+        <h2>Pagamento</h2>
+
+        <button id="btnDinheiro" class="hidden">Dinheiro</button>
+
+        <input type="number" id="valorPago" placeholder="Valor recebido" />
+
+
+
+        <!-- <button>Pix</button>
+        <button>Débito</button>
+        <button>Crédito</button> -->
+<div class="aling-content">
+        <div class="align-btn">
+          <button id="btnBack"><i class="fa-solid fa-rotate-left"></i></i>Voltar</button>
+          <button id="btnFinalizar"><i class="fa-solid fa-credit-card"></i>Finalizar Compra</button>
+        </div>
+        <div class="cancel">
+          <button id="btnLimpar"><i class="fa-regular fa-rectangle-xmark"></i>Cancelar Compra</button>
+        </div>
+        <!-- <div id="troco"></div> -->
+      </div>
+    </div>
+
+    </div>
+    </div>
+
+    <!-- tela pinpad -->
+
+    <div id="pinpadModal" class="pinpad-modal" tabindex="-1">
+      <div class="pinpad">
+        <h2>Autorização</h2>
+
+        <p>Digite a senha do operador</p>
+
+        <input type="password" id="senhaPin" readonly />
+
+        <div class="teclado">
+          <button onclick="digitarPin('1')">1</button>
+          <button onclick="digitarPin('2')">2</button>
+          <button onclick="digitarPin('3')">3</button>
+
+          <button onclick="digitarPin('4')">4</button>
+          <button onclick="digitarPin('5')">5</button>
+          <button onclick="digitarPin('6')">6</button>
+
+          <button onclick="digitarPin('7')">7</button>
+          <button onclick="digitarPin('8')">8</button>
+          <button onclick="digitarPin('9')">9</button>
+
+          <button onclick="apagarPin()">←</button>
+          <button onclick="digitarPin('0')">0</button>
+          <button onclick="confirmarPin()">OK</button>
+        </div>
+
+        <button class="cancelarPin" onclick="fecharPinpad()">Cancelar</button>
+      </div>
+    </div>
+
+
+    <script src="js/operadores.js"></script>
+    <script src="js/produtos.js"></script>
+    <script src="js/carrinho.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
