@@ -1,7 +1,7 @@
 const produtos = [
   {
     id: 7,
-    codigo: '789100000000',
+    codigo: '7890000000000',
     nome: 'teste 5kg',
     preco: 28.9,
   },

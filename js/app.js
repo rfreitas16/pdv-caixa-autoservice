@@ -1,9 +1,10 @@
 //operadores
-window.onload = async () => {
-  await carregarOperadores();
+// window.onload = async () => {
+//   await carregarOperadores();
 
-  console.log('Operadores carregados.');
-};
+//   console.log('Operadores carregados.');
+// };
+// TODO ver operador que esta cancelando sem digitar a senha
 
 //botoes
 document.getElementById('btnDinheiro').addEventListener('click', methodMoney);
@@ -15,7 +16,7 @@ document
 document.getElementById('btnLimpar').addEventListener('click', limparCarrinho);
 document
   .getElementById('btn-codbarnum')
-  .addEventListener('click', digitarCodigo);
+  .addEventListener('click', digitarCodigoUnid);
 
 ///quantidade
 document.getElementById('btn-qtd').addEventListener('click', DigitarQuantidade);
@@ -134,4 +135,41 @@ function produtCode(codigo) {
     apagarCod();
   }
   return;
+}
+
+function procurarProduto(codigo) {
+  const produto = produtos.find(p => p.codigo === codigo);
+
+  if (!produto) {
+    alert('Produto não cadastrado.');
+    return;
+  }
+
+  const quantidadeInput = document.getElementById('productQtd');
+  // volta para 1 quantidade antes de adicionar
+  quantidadeInput.value = 1;
+
+  const quantidade = parseInt(quantidadeInput.value, 10) || 1;
+
+  adicionarProduto(produto.id, quantidade);
+
+  document.getElementById('codigoBarras').value = '';
+}
+function procurarProdutoPorQtd(codigo) {
+  const produto = produtos.find(p => p.codigo === codigo);
+
+  if (!produto) {
+    alert('Produto não cadastrado.');
+    return;
+  }
+
+  const quantidade = EnviarQtd();
+
+  adicionarProduto(produto.id, quantidade);
+
+  // // Depois da venda, volta para 1
+  // quantidadeInput.value = 1;
+  quantidade.value = 1;
+
+  document.getElementById('codigoBarras').value = '';
 }

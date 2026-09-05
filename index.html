@@ -35,7 +35,7 @@
             maxlength="13"
           />
         </div>
-        
+
         <div id="modal-scanner" >
           <input class="scan"
             type="text"
@@ -83,7 +83,35 @@
         </div>
 
       </div>
+    <!-- PINPAD PRODUTO UNITARIO  -->
+    <div id="pinpadModalProdUnid" class="pinpad-modal" tabindex="-1">
+      <div class="pinpad">
+        <h2>Digite o codigo de Barras Unidade</h2>
 
+        <input type="number" id="codeNumberUnid" readonly />
+
+        <div class="teclado">
+          <button onclick="digitarCodUnid('1')">1</button>
+          <button onclick="digitarCodUnid('2')">2</button>
+          <button onclick="digitarCodUnid('3')">3</button>
+
+          <button onclick="digitarCodUnid('4')">4</button>
+          <button onclick="digitarCodUnid('5')">5</button>
+          <button onclick="digitarCodUnid('6')">6</button>
+
+          <button onclick="digitarCodUnid('7')">7</button>
+          <button onclick="digitarCodUnid('8')">8</button>
+          <button onclick="digitarCodUnid('9')">9</button>
+
+          <button onclick="apagarCod()">←</button>
+          <button onclick="digitarCodUnid('0')">0</button>
+          <button onclick="confirmarCodUnid()">OK</button>
+        </div>
+
+        <button class="cancelarCod" onclick="fecharPinpad()">Cancelar</button>
+      </div>
+            </div>
+  <!-- PINPAD PRODUTO  -->
            <div id="pinpadModalProd" class="pinpad-modal" tabindex="-1">
       <div class="pinpad">
         <h2>Digite o codio de Barras</h2>
@@ -111,14 +139,35 @@
         <button class="cancelarCod" onclick="fecharPinpad()">Cancelar</button>
       </div>
             </div>
-
     <!-- ------------------------------ -->
+    <!-- <div class="entrada-produto">
 
-               <div id="pinpadModalQtd" class="pinpad-modal" tabindex="-1">
+    <input
+        type="number"
+        id="quantidade"
+        value="1"
+        min="1"
+        max="13"
+        step="1"
+        placeholder="Quantidade">
+
+    <input
+        type="text"
+        id="codigoBarras2"
+        placeholder="Passe o código de barras"
+        autocomplete="off">
+
+    <button id="abrirScanner">
+        📷 Webcam
+    </button>
+
+    </div> -->
+  <!-- PINPAD DE QUANTIDADE  -->
+    <div id="pinpadModalQtd" class="pinpad-modal" tabindex="-1">
       <div class="pinpad">
         <h2>Digite a Quantidade desejada</h2>
 
-        <input type="number" id="productQtd" readonly />
+        <input type="number" value="1" min="1" step="1" id="productQtd" readonly />
 
         <div class="teclado">
           <button onclick="digitarQtd('1')">1</button>
@@ -153,12 +202,10 @@
 
         <input type="number" id="valorPago" placeholder="Valor recebido" />
 
-
-
         <!-- <button>Pix</button>
         <button>Débito</button>
         <button>Crédito</button> -->
-<div class="aling-content">
+      <div class="aling-content">
         <div class="align-btn">
           <button id="btnBack"><i class="fa-solid fa-rotate-left"></i></i>Voltar</button>
           <button id="btnFinalizar"><i class="fa-solid fa-credit-card"></i>Finalizar Compra</button>
@@ -173,7 +220,7 @@
     </div>
     </div>
 
-    <!-- tela pinpad -->
+    <!-- tela pinpad Operador-->
 
     <div id="pinpadModal" class="pinpad-modal" tabindex="-1">
       <div class="pinpad">
@@ -206,7 +253,7 @@
     </div>
 
 
-    <script src="js/operadores.js"></script>
+    <!-- <script src="js/operadores.js"></script> -->
     <script src="js/produtos.js"></script>
     <script src="js/carrinho.js"></script>
     <script src="js/app.js"></script>

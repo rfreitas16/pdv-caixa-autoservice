@@ -1,41 +1,32 @@
 let carrinho = [];
 
-function adicionarProduto(id) {
+function adicionarProduto(id, quantidade) {
   const produto = produtos.find(p => p.id == id);
 
-  const existe = carrinho.find(item => item.id == id);
+  if (!produto) {
+    alert('Produto não encontrado.');
+    return;
+  }
 
-  if (existe) {
-    existe.qtd++;
+  quantidade = parseInt(quantidade, 10);
+
+  if (isNaN(quantidade) || quantidade <= 0) {
+    quantidade = 1;
+  }
+
+  const itemExistente = carrinho.find(item => item.id == id);
+
+  if (itemExistente) {
+    // SOMA somente a nova quantidade
+    itemExistente.qtd = Number(itemExistente.qtd) + quantidade;
   } else {
     carrinho.push({
       ...produto,
-      qtd: 1,
+      qtd: quantidade,
     });
   }
 
   atualizarCarrinho();
-}
-
-// TODO fazer aqui a funcao de adiconar a qautidadae
-
-function adicionarQtdProduto(produto){
-  const produto = produtos.find(p => p.id == id);
-
-  const existe = carrinho.find(item => item.id == id);
-
-  if (existe) {
-    existe.qtd++;
-  } else {
-    carrinho.push({
-      ...produto,
-      qtd: 1,
-    });
-  }
-
-  console.log(produto, 'vindo do qtd produto novo');
-
-  // atualizarCarrinho();
 }
 
 function atualizarCarrinho() {
@@ -84,13 +75,15 @@ function limparCarrinho() {
 
   document.getElementById('valorPago').value = '';
 }
+function digitarCodigoUnid() {
+  solicitarCodigoBarrasUnid();
+}
 function digitarCodigo() {
   solicitarCodigoBarras();
 }
 function DigitarQuantidade() {
   solicitarQtd();
 }
-
 function finalizarCompra() {
   const total = parseFloat(document.getElementById('total').innerText);
 
@@ -148,6 +141,12 @@ function cancelarItem(id) {
 }
 //Digitar o codigo de barras com pinpad
 
+function solicitarCodigoBarrasUnid(callback) {
+  acaoPendente = callback;
+
+  document.getElementById('codeNumberUnid').value = '';
+  document.getElementById('pinpadModalProdUnid').style.display = 'flex';
+}
 function solicitarCodigoBarras(callback) {
   acaoPendente = callback;
 
@@ -161,23 +160,52 @@ function digitarCod(numero) {
     campo.value += numero;
   }
 }
+function digitarCodUnid(numero) {
+  const campo = document.getElementById('codeNumberUnid');
+
+  if (campo.value.length < 13) {
+    campo.value += numero;
+  }
+}
 function apagarCod() {
   const campo = document.getElementById('codeNumber');
 
   campo.value = campo.value = '';
 }
-function confirmarCod() {
-  const codnumber = document.getElementById('codeNumber').value;
+function apagarCodUnid() {
+  const campo = document.getElementById('codeNumberUnid');
+
+  campo.value = campo.value = '';
+}
+function confirmarCodUnid() {
+  const codnumber = document.getElementById('codeNumberUnid').value;
   if (codnumber.length < 13) {
     alert('o codigo deve ter 13 digitos, tente novamente');
     apagarCod();
+    console.log(codnumber, 'codnumberUnid');
   } else {
-    produtCode(codnumber);
+    procurarProduto(codnumber);
+    fecharPinpad();
+  }
+}
+function confirmarCod(quantidade) {
+  const codnumber = document.getElementById('codeNumber').value;
+  console.log(quantidade, 'qtd recebida na funcao');
+  if (codnumber.length < 13) {
+    alert('o codigo deve ter 13 digitos, tente novamente');
+    apagarCod();
+    console.log(codnumber, 'codnumber');
+  } else {
+    procurarProdutoPorQtd(codnumber, quantidade);
+    fecharPinpad();
   }
 }
 
 ///Digitar quantidade do produto antes de ler o codigo de barras
-
+// function fecharCodProdutos() {
+//   document.getElementById('codigoBarrasFocus').style.display = 'none';
+//   document.getElementById('modal-scanner').style.display = 'none';
+// }
 function solicitarQtd(callback) {
   acaoPendente = callback;
 
@@ -195,56 +223,63 @@ function apagarQtd() {
   campo.value = campo.value = '';
 }
 function EnviarQtd() {
-  const qtd = document.getElementById('productQtd').value;
-  if (qtd <= 0) {
+  const quantidadeInput = document.getElementById('productQtd');
+  if (quantidadeInput <= 0) {
     alert('digite um valor valido');
     apagarQtd();
   } else {
-    console.log(qtd,'qtd vindo da funcao no numpad');
+    const quantidade = parseInt(quantidadeInput.value) || 1;
+    console.log(quantidade, 'vinda do pinpad');
     fecharPinpad();
-    codeScan(qtd);
-    return qtd;
+    digitarCodigo();
+    return quantidade;
   }
 }
-// TODO parei aqui
-///modal de passar o produto
-function codeScan(qtd) {
-  const leitor = document.getElementById('codigoBarrasFocus');
-  const modalLeitor = document.getElementById('modal-scanner');
-  modalLeitor.style.display = 'flex';
-  leitor.focus();
-  leitor.maxLength = 13;
+// pinpad do produto unid
+document.addEventListener('keydown', e => {
+  const modal = document.getElementById('pinpadModalProdUnid');
 
-  leitor.addEventListener('keydown', function (e) {
-    if (e.key !== 'Enter') return;
+  // Só funciona quando o PIN Pad estiver aberto
+  if (modal.style.display !== 'flex') return;
 
-    const codigo = leitor.value;
-    console.log(codigo, 'leitor 2');
+  // Números do teclado principal
+  if (e.key >= '0' && e.key <= '9') {
+    digitarCodUnid(e.key);
+    e.preventDefault();
+    return;
+  }
 
-    const produto = produtos.find(p => p.codigo === codigo);
-    console.log(produto);
+  // Números do teclado numérico (Numpad)
+  if (e.code.startsWith('Numpad')) {
+    const numero = e.code.replace('Numpad', '');
 
-    if (produto) {
-      adicionarQtdProduto(produto.id);
-      modalLeitor.style.display = 'none';
-
-    } else {
-      alert('Produto não encontrado.');
+    if (!isNaN(numero)) {
+      digitarCodUnid(numero);
+      e.preventDefault();
+      return;
     }
-  });
+  }
 
-  //   if (produto) {
-  //     adicionarProduto(produto.id);
-  //   } else {
-  //     alert('Produto não encontrado.');
-  //   }
+  // Backspace
+  if (e.key === 'Backspace') {
+    apagarCodUnid();
+    e.preventDefault();
+    return;
+  }
 
-  //   leitor.value = '';
+  // Enter
+  if (e.key === 'Enter') {
+    confirmarCodUnid();
+    e.preventDefault();
+    return;
+  }
 
-  //   leitor.focus();
-  // });
-}
-
+  // Esc
+  if (e.key === 'Escape') {
+    fecharPinpad();
+    e.preventDefault();
+  }
+});
 //acao das teclas do pinpad produtos
 document.addEventListener('keydown', e => {
   const modal = document.getElementById('pinpadModalProd');
@@ -290,7 +325,6 @@ document.addEventListener('keydown', e => {
     e.preventDefault();
   }
 });
-
 //acao das teclas do pinpad quantidade
 document.addEventListener('keydown', e => {
   const modal = document.getElementById('pinpadModalQtd');
@@ -336,9 +370,7 @@ document.addEventListener('keydown', e => {
     e.preventDefault();
   }
 });
-
 //foco no pinpad
-
 function solicitarSenha(callback) {
   acaoPendente = callback;
 
@@ -350,7 +382,6 @@ function solicitarSenha(callback) {
   // Garante que o teclado funcione imediatamente
   modal.focus();
 }
-
 ///validador de senha pinpad
 
 const SENHA_OPERADOR = '1234';
@@ -382,6 +413,7 @@ function fecharPinpad() {
   document.getElementById('pinpadModal').style.display = 'none';
   document.getElementById('pinpadModalProd').style.display = 'none';
   document.getElementById('pinpadModalQtd').style.display = 'none';
+  document.getElementById('pinpadModalProdUnid').style.display = 'none';
 }
 function confirmarPin() {
   const senha = document.getElementById('senhaPin').value;
