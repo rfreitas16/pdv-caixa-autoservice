@@ -6,6 +6,12 @@ const produtos = [
     preco: 28.9,
   },
   {
+    id: 10,
+    codigo: '7896004758268',
+    nome: 'Budesonida 32mcg',
+    preco: 5.0,
+  },
+  {
     id: 1,
     codigo: '7891000000001',
     nome: 'Arroz 5kg',

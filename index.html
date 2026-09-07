@@ -76,11 +76,25 @@
 
       <div class="area-buttons">
         <div class="align-content-btn">
+          <div class="barcode-ico">
+          <h2>Passe o código de barras no leitor</h2>
+          <i class="fa-solid fa-barcode"></i>
+          </div>
+
         <button id="btn-codbarnum"><i class="fa-solid fa-barcode"></i>Digitar Código</button>
         <button id="btn-qtd"><i class="fa-solid fa-plus"></i>Digitar Quantidade</button>
         </div>
             <button id="btn-help"><i class="fa-solid fa-exclamation"></i>Solicitar Ajuda</button>
+      </div>
+
+      <div class="area-buttons-payment">
+        <div class="align-content-btn">
+        <button id="btn-pix"><i class="fa-brands fa-pix"></i>Pix</button>
+        <button id="btn-credit"><i class="fa-solid fa-credit-card"></i></i>Cartao débito</button>
+        <button id="btn-debit"><i class="fa-regular fa-credit-card"></i></i>Cartao crédito</button>
         </div>
+            <button id="btn-help"><i class="fa-solid fa-exclamation"></i>Solicitar Ajuda</button>
+      </div>
 
       </div>
     <!-- PINPAD PRODUTO UNITARIO  -->
@@ -139,29 +153,7 @@
         <button class="cancelarCod" onclick="fecharPinpad()">Cancelar</button>
       </div>
             </div>
-    <!-- ------------------------------ -->
-    <!-- <div class="entrada-produto">
 
-    <input
-        type="number"
-        id="quantidade"
-        value="1"
-        min="1"
-        max="13"
-        step="1"
-        placeholder="Quantidade">
-
-    <input
-        type="text"
-        id="codigoBarras2"
-        placeholder="Passe o código de barras"
-        autocomplete="off">
-
-    <button id="abrirScanner">
-        📷 Webcam
-    </button>
-
-    </div> -->
   <!-- PINPAD DE QUANTIDADE  -->
     <div id="pinpadModalQtd" class="pinpad-modal" tabindex="-1">
       <div class="pinpad">
@@ -191,7 +183,7 @@
       </div>
     </div>
 
-    </div>
+
 
 
     <div class="container">
@@ -202,9 +194,6 @@
 
         <input type="number" id="valorPago" placeholder="Valor recebido" />
 
-        <!-- <button>Pix</button>
-        <button>Débito</button>
-        <button>Crédito</button> -->
       <div class="aling-content">
         <div class="align-btn">
           <button id="btnBack"><i class="fa-solid fa-rotate-left"></i></i>Voltar</button>
@@ -252,7 +241,7 @@
       </div>
     </div>
 
-
+    <!-- <script src="https://unpkg.com/html5-qrcode"></script> -->
     <!-- <script src="js/operadores.js"></script> -->
     <script src="js/produtos.js"></script>
     <script src="js/carrinho.js"></script>

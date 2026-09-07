@@ -9,9 +9,7 @@
 //botoes
 document.getElementById('btnDinheiro').addEventListener('click', methodMoney);
 
-document
-  .getElementById('btnFinalizar')
-  .addEventListener('click', finalizarCompra);
+document.getElementById('btnFinalizar').addEventListener('click', irPagamento);
 
 document.getElementById('btnLimpar').addEventListener('click', limparCarrinho);
 document
@@ -21,7 +19,14 @@ document
 ///quantidade
 document.getElementById('btn-qtd').addEventListener('click', DigitarQuantidade);
 
-////leitor por camera
+// botao de ajuda
+document.getElementById('btn-help').addEventListener('click', terminalHelp);
+///carregar carrinho
+document.addEventListener('DOMContentLoaded', () => {
+  carregarCarrinhoSessao();
+});
+
+//leitor por camera
 
 // let scanner;
 
@@ -83,6 +88,43 @@ document.getElementById('btn-qtd').addEventListener('click', DigitarQuantidade);
 
 //   procurarProduto(codigo);
 // }
+
+// funcao de quantidade para o leitor
+
+// function sucessoLeitura(codigo) {
+
+//     const quantidade = parseInt(
+//         document.getElementById("quantidade").value
+//     ) || 1;
+
+//     const produto = produtos.find(
+//         p => p.codigo === codigo
+//     );
+
+//     if (!produto) {
+
+//         alert("Produto não cadastrado.");
+
+//         return;
+//     }
+
+//     adicionarProduto(
+//         produto.id,
+//         quantidade
+//     );
+
+//     document.getElementById("quantidade").value = 1;
+
+//     console.log(
+//         `${quantidade}x ${produto.nome} adicionado`
+//     );
+// }
+function terminalHelp() {
+  alert('Ajuda Solicitada ao operador, Aguarde...');
+  const som = new Audio('./assets/sounds/bell-start.mp3');
+  som.currentTime = 0;
+  som.play();
+}
 
 function procurarProduto(codigo) {
   const produto = produtos.find(p => p.codigo === codigo);

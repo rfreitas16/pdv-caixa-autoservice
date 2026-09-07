@@ -25,10 +25,9 @@ function adicionarProduto(id, quantidade) {
       qtd: quantidade,
     });
   }
-
+  salvarCarrinhoSessao();
   atualizarCarrinho();
 }
-
 function atualizarCarrinho() {
   const tbody = document.getElementById('carrinho');
 
@@ -59,17 +58,16 @@ function atualizarCarrinho() {
 
   document.getElementById('total').innerText = total.toFixed(2);
 }
-
 function methodMoney() {
   input = document.getElementById('valorPago');
   input.style.display = 'block';
 }
-
 function limparCarrinho() {
   solicitarSenha();
   carrinho = [];
 
   atualizarCarrinho();
+  sessionStorage.removeItem('carrinho');
 
   document.getElementById('troco').innerHTML = '';
 
@@ -83,6 +81,23 @@ function digitarCodigo() {
 }
 function DigitarQuantidade() {
   solicitarQtd();
+}
+function trocarlayout() {
+  const btns = document.getElementsByClassName('area-buttons');
+  console.log(btns);
+  btns.style.display = 'hidden';
+  console.log(btns); // const payments = document.getElementsByClassName('area-buttons-payment');
+  // payments.style.display = 'flex';
+}
+function irPagamento() {
+  trocarlayout();
+  const total = parseFloat(document.getElementById('total').innerText);
+
+  if (total == 0) {
+    alert('Carrinho vazio.');
+
+    return;
+  }
 }
 function finalizarCompra() {
   const total = parseFloat(document.getElementById('total').innerText);
@@ -113,7 +128,6 @@ function finalizarCompra() {
 
         <h3>Compra Finalizada</h3>
 
-
         <p>Total: R$ ${total.toFixed(2)}</p>
 
         <p>Pago: R$ ${pago.toFixed(2)}</p>
@@ -132,7 +146,7 @@ function removerProduto(id) {
   } else {
     carrinho.splice(indice, 1);
   }
-
+  salvarCarrinhoSessao();
   atualizarCarrinho();
 }
 function cancelarItem(id) {
@@ -182,7 +196,6 @@ function confirmarCodUnid() {
   if (codnumber.length < 13) {
     alert('o codigo deve ter 13 digitos, tente novamente');
     apagarCod();
-    console.log(codnumber, 'codnumberUnid');
   } else {
     procurarProduto(codnumber);
     fecharPinpad();
@@ -190,15 +203,33 @@ function confirmarCodUnid() {
 }
 function confirmarCod(quantidade) {
   const codnumber = document.getElementById('codeNumber').value;
-  console.log(quantidade, 'qtd recebida na funcao');
   if (codnumber.length < 13) {
     alert('o codigo deve ter 13 digitos, tente novamente');
     apagarCod();
-    console.log(codnumber, 'codnumber');
   } else {
     procurarProdutoPorQtd(codnumber, quantidade);
     fecharPinpad();
   }
+}
+//salvar carrinho na sessao
+function salvarCarrinhoSessao() {
+  sessionStorage.setItem('carrinho', JSON.stringify(carrinho));
+}
+//recuperar carrinho
+function carregarCarrinhoSessao() {
+  const dados = sessionStorage.getItem('carrinho');
+
+  if (dados) {
+    try {
+      carrinho = JSON.parse(dados);
+    } catch (erro) {
+      console.error('Erro ao carregar carrinho:', erro);
+
+      carrinho = [];
+    }
+  }
+
+  atualizarCarrinho();
 }
 
 ///Digitar quantidade do produto antes de ler o codigo de barras
@@ -229,7 +260,6 @@ function EnviarQtd() {
     apagarQtd();
   } else {
     const quantidade = parseInt(quantidadeInput.value) || 1;
-    console.log(quantidade, 'vinda do pinpad');
     fecharPinpad();
     digitarCodigo();
     return quantidade;
