@@ -1,10 +1,9 @@
-//operadores
-// window.onload = async () => {
-//   await carregarOperadores();
+operadores;
+window.onload = async () => {
+  await carregarOperadores();
 
-//   console.log('Operadores carregados.');
-// };
-// TODO ver operador que esta cancelando sem digitar a senha
+  console.log('Operadores carregados.');
+};
 
 //botoes
 document.getElementById('btnDinheiro').addEventListener('click', methodMoney);

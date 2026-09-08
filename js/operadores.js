@@ -2,7 +2,7 @@ let operadores = [];
 
 async function carregarOperadores() {
   try {
-    const resposta = await fetch('data/operadores.json');
+    const resposta = await fetch('operadores.json');
 
     operadores = await resposta.json();
   } catch (erro) {

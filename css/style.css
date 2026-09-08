@@ -76,6 +76,12 @@ body {
     font-size: 8em;
   }
 }
+.invisible {
+  display: none;
+}
+.visible {
+  display: flex;
+}
 
 .area-buttons {
   display: flex;
@@ -89,7 +95,6 @@ body {
   justify-content: space-around;
 }
 .area-buttons-payment {
-
   display: flex;
   flex-direction: column;
   width: 30%;
@@ -100,17 +105,17 @@ body {
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   justify-content: space-around;
   text-align: center;
-    display: none;
-    gap: 20px;
+  display: none;
+  gap: 20px;
 
-    & .fa-brands .fa-solid .fa-regular {
-      display: flex;
-      gap: 10px;
-      padding: 10px;
-    }
-    & .fa-brands{
-      margin-right: 10px;
-    }
+  & .fa-brands .fa-solid .fa-regular {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+  }
+  & .fa-brands {
+    margin-right: 10px;
+  }
 }
 .align-content-btn {
   display: flex;
@@ -187,6 +192,30 @@ button {
   background-color: #ddd;
   width: 50px;
   border-radius: 20px;
+}
+.hidden {
+  display: none;
+}
+.estacionamento-modal {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  /* display: none; */
+}
+.estacionamento {
+  width: 600px;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+}
+.red {
+  background-color: #d32f2f;
 }
 .hidden {
   display: none;

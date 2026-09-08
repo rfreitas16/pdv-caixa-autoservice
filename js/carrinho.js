@@ -63,15 +63,11 @@ function methodMoney() {
   input.style.display = 'block';
 }
 function limparCarrinho() {
-  solicitarSenha();
-  carrinho = [];
-
-  atualizarCarrinho();
-  sessionStorage.removeItem('carrinho');
-
-  document.getElementById('troco').innerHTML = '';
-
-  document.getElementById('valorPago').value = '';
+  solicitarSenha(() => {
+    sessionStorage.removeItem('carrinho');
+    carrinho = [];
+    atualizarCarrinho();
+  });
 }
 function digitarCodigoUnid() {
   solicitarCodigoBarrasUnid();
@@ -82,13 +78,20 @@ function digitarCodigo() {
 function DigitarQuantidade() {
   solicitarQtd();
 }
-function trocarlayout() {
-  const btns = document.getElementsByClassName('area-buttons');
-  console.log(btns);
-  btns.style.display = 'hidden';
-  console.log(btns); // const payments = document.getElementsByClassName('area-buttons-payment');
-  // payments.style.display = 'flex';
-}
+
+// troca de layout ao clicar em finalizar compra
+
+// function trocarlayout() {
+//   const btns = document.getElementsByClassName('area-buttons');
+
+//   for (const btn of btns) {
+//     btn.style.display = 'none';
+//   }
+//   const payments = document.getElementsByClassName('area-buttons-payment');
+//   for (const payment of payments) {
+//     payment.style.display = 'flex';
+//   }
+// }
 function irPagamento() {
   trocarlayout();
   const total = parseFloat(document.getElementById('total').innerText);
@@ -180,6 +183,7 @@ function digitarCodUnid(numero) {
   if (campo.value.length < 13) {
     campo.value += numero;
   }
+  // TODO colocar funcao de apertar enter automaticamente
 }
 function apagarCod() {
   const campo = document.getElementById('codeNumber');
@@ -414,8 +418,6 @@ function solicitarSenha(callback) {
 }
 ///validador de senha pinpad
 
-const SENHA_OPERADOR = '1234';
-
 let acaoPendente = null;
 
 function solicitarSenha(callback) {
@@ -429,11 +431,21 @@ function solicitarSenha(callback) {
 function digitarPin(numero) {
   const campo = document.getElementById('senhaPin');
 
-  if (campo.value.length < 4) {
-    campo.value += numero;
+  // Não permite mais de 4 dígitos
+  if (campo.value.length >= 4) {
+    return;
+  }
+
+  campo.value += numero;
+
+  // Ao completar 4 dígitos, confirma automaticamente
+  if (campo.value.length === 4) {
+    // Pequeno atraso para o operador visualizar o último dígito
+    setTimeout(() => {
+      confirmarPin();
+    }, 150);
   }
 }
-
 function apagarPin() {
   const campo = document.getElementById('senhaPin');
 
@@ -445,16 +457,33 @@ function fecharPinpad() {
   document.getElementById('pinpadModalQtd').style.display = 'none';
   document.getElementById('pinpadModalProdUnid').style.display = 'none';
 }
+
+//Parte dos operadores para limpar o carrinho passando senha de operador
+let validandoPin = false;
+let operadorAutorizado = null;
+
 function confirmarPin() {
-  const senha = document.getElementById('senhaPin').value;
-
-  if (senha !== SENHA_OPERADOR) {
-    alert('Senha inválida.');
-    const campo = document.getElementById('senhaPin');
-
-    campo.value = campo.value = '';
+  if (validandoPin) {
     return;
   }
+
+  validandoPin = true;
+
+  const senha = document.getElementById('senhaPin').value;
+
+  const operador = buscarOperadorPorPin(senha);
+
+  if (!operador) {
+    alert('Senha inválida.');
+
+    document.getElementById('senhaPin').value = '';
+
+    validandoPin = false;
+
+    return;
+  }
+
+  operadorAutorizado = operador;
 
   fecharPinpad();
 
@@ -463,10 +492,12 @@ function confirmarPin() {
 
     acaoPendente = null;
   }
+
+  validandoPin = false;
+
+  console.log(`${operadorAutorizado.nome} autorizou a operação.`);
 }
-
 //adicionar acao das teclas
-
 document.addEventListener('keydown', e => {
   const modal = document.getElementById('pinpadModal');
 
@@ -511,9 +542,7 @@ document.addEventListener('keydown', e => {
     e.preventDefault();
   }
 });
-
-//foco no pinpad
-
+// foco no pinpad
 function solicitarSenha(callback) {
   acaoPendente = callback;
 
