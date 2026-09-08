@@ -1,6 +1,6 @@
 let carrinho = [];
 
-function adicionarProduto(id, quantidade) {
+function adicionarProduto(id, quantidade, desconto = 0) {
   const produto = produtos.find(p => p.id == id);
 
   if (!produto) {
@@ -13,16 +13,25 @@ function adicionarProduto(id, quantidade) {
   if (isNaN(quantidade) || quantidade <= 0) {
     quantidade = 1;
   }
+  desconto = parseFloat(desconto) || 0;
+  // Limita o desconto entre 0% e 100%
+  if (desconto < 0) desconto = 0;
+  if (desconto > 100) desconto = 100;
 
   const itemExistente = carrinho.find(item => item.id == id);
 
   if (itemExistente) {
     // SOMA somente a nova quantidade
     itemExistente.qtd = Number(itemExistente.qtd) + quantidade;
+    // Atualiza o desconto somente se foi informado
+    if (desconto > 0) {
+      itemExistente.desconto = desconto;
+    }
   } else {
     carrinho.push({
       ...produto,
       qtd: quantidade,
+      desconto: Number(produto.desconto) || 0,
     });
   }
   salvarCarrinhoSessao();
@@ -36,7 +45,18 @@ function atualizarCarrinho() {
   let total = 0;
 
   carrinho.forEach(item => {
-    const subtotal = item.preco * item.qtd;
+    const preco = Number(item.preco);
+    const quantidade = Number(item.qtd);
+    const desconto = Number(item.desconto) || 0;
+
+    // Valor bruto
+    const subtotalBruto = preco * quantidade;
+
+    // Valor do desconto
+    const valorDesconto = subtotalBruto * (desconto / 100);
+
+    // Subtotal final com desconto
+    const subtotal = subtotalBruto - valorDesconto;
 
     total += subtotal;
 
@@ -45,8 +65,17 @@ function atualizarCarrinho() {
             <td>${item.nome}</td>
             <td>R$ ${item.preco.toFixed(2)}</td>
             <td>${item.qtd}</td>
+            <td>
+               ${item.desconto && item.desconto > 0 ? item.desconto + '%' : 'Sem desconto'}
+            </td>
 
-            <td>R$ ${subtotal.toFixed(2)}</td>
+            <td>
+            ${
+              desconto > 0
+                ? `<strong>R$ ${subtotal.toFixed(2)}</strong>`
+                : `<strong>R$ ${subtotal.toFixed(2)}</strong>`
+            }
+            </td>
             <td>
         <button id="cancelar" onclick="removerProduto(${item.id})">
             ❌
@@ -58,6 +87,7 @@ function atualizarCarrinho() {
 
   document.getElementById('total').innerText = total.toFixed(2);
 }
+
 function methodMoney() {
   input = document.getElementById('valorPago');
   input.style.display = 'block';
