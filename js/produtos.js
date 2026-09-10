@@ -18,7 +18,7 @@ const produtos = [
     codigo: '7891000000001',
     nome: 'Arroz 5kg',
     preco: 28.9,
-    desconto: 0,
+    desconto: 10,
   },
   {
     id: 2,

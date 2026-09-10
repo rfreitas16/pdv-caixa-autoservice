@@ -46,6 +46,7 @@
         </div>
 
         <!-- <div id="produtos" class="produtos"></div> -->
+
         <h2>Carrinho</h2>
         <div class="card-products">
           <div class="cart">
@@ -65,8 +66,6 @@
 
               <tbody id="carrinho"></tbody>
             </table>
-
-
           </div>
         </div>
         <div class="total">
@@ -75,6 +74,29 @@
         </div>
       </div>
 
+<!-- RESUMO DA COMPRA  -->
+      <div class="cardCheck">
+        <h2>Resumo da compra</h2>
+        <div class="card-checkout">
+          <div class="card-check">
+          <table>
+                <thead>
+                  <tr class="thead-fixed">
+                    <th>Total de itens</th>
+                    <th>Valor em compras</th>
+                    <th>Total de descontos</th>
+                    <th>Estacionamento</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+
+                <!-- <tbody id="carrinho"></tbody> -->
+                  <tbody id="tabelaResumoCompra">
+                </tbody>
+              </table>
+              </div>
+        </div>
+      </div>
       <div class="area-buttons">
         <div class="align-content-btn">
           <div class="barcode-ico">
@@ -88,21 +110,49 @@
             <button id="btn-help"><i class="fa-solid fa-exclamation"></i>Solicitar Ajuda</button>
       </div>
 
-      <div class="estacionamento-modal hidden">
-        <div class="estacionamento">
-          <h1>Passe o ticket de estacionamento no leitor</h1>
-          <button>Sim, pagar</button>
-          <button class="red">Nao possuo</button>
+      <!-- Segunda tela antes do checkout  -->
+
+      <!-- pinpad estacionamento   -->
+
+    <div id="pinpadModalParking" class="pinpad-modal" tabindex="-1">
+      <div class="pinpad">
+        <h2>Passe o ticket de estacionamento no leitor</h2>
+
+        <input type="number" id="parking" readonly />
+
+        <div class="teclado">
+          <button onclick="digitarNum('1')">1</button>
+          <button onclick="digitarNum('2')">2</button>
+          <button onclick="digitarNum('3')">3</button>
+
+          <button onclick="digitarNum('4')">4</button>
+          <button onclick="digitarNum('5')">5</button>
+          <button onclick="digitarNum('6')">6</button>
+
+          <button onclick="digitarNum('7')">7</button>
+          <button onclick="digitarNum('8')">8</button>
+          <button onclick="digitarNum('9')">9</button>
+
+          <button onclick="apagarNum()">←</button>
+          <button onclick="digitarNum('0')">0</button>
+          <button onclick="confirmarNum()">OK</button>
         </div>
+
+
+
+        <button onclick="trocarlayout()" class="yellow">Sem ticket</button>
       </div>
+    </div>
+      <!-- ---Area dos botoes de pagamento-----  -->
 
       <div class="area-buttons-payment">
         <div class="align-content-btn">
+          <h2>Escolha a forma de Pagamento</h2>
         <button id="btn-pix"><i class="fa-brands fa-pix"></i>Pix</button>
         <button id="btn-credit"><i class="fa-solid fa-credit-card"></i></i>Cartao débito</button>
         <button id="btn-debit"><i class="fa-regular fa-credit-card"></i></i>Cartao crédito</button>
         </div>
-            <button id="btn-help"><i class="fa-solid fa-exclamation"></i>Solicitar Ajuda</button>
+            <button onclick="terminalHelp()" id="btn-help"><i class="fa-solid fa-exclamation"></i>Solicitar Ajuda</button>
       </div>
 
       </div>
@@ -135,9 +185,9 @@
       </div>
             </div>
   <!-- PINPAD PRODUTO  -->
-           <div id="pinpadModalProd" class="pinpad-modal" tabindex="-1">
-      <div class="pinpad">
-        <h2>Digite o codio de Barras</h2>
+      <div id="pinpadModalProd" class="pinpad-modal" tabindex="-1">
+        <div class="pinpad">
+         <h2>Digite ou passe o codigo de Barras</h2>
 
         <input type="number" id="codeNumber" readonly />
 
@@ -192,12 +242,10 @@
       </div>
     </div>
 
-
-
-
+ <!-- FOOTER  -->
     <div class="container">
       <div class="card-footer">
-        <h2>Pagamento</h2>
+        <h2>Selecione uma das opções abaixo</h2>
 
         <button id="btnDinheiro" class="hidden">Dinheiro</button>
 

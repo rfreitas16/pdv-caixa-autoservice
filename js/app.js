@@ -10,13 +10,15 @@ document.getElementById('btnDinheiro').addEventListener('click', methodMoney);
 
 document.getElementById('btnFinalizar').addEventListener('click', irPagamento);
 
+document.getElementById('btnBack').addEventListener('click', voltarLayout);
+
 document.getElementById('btnLimpar').addEventListener('click', limparCarrinho);
 document
   .getElementById('btn-codbarnum')
   .addEventListener('click', digitarCodigoUnid);
 
 ///quantidade
-document.getElementById('btn-qtd').addEventListener('click', DigitarQuantidade);
+document.getElementById('btn-qtd').addEventListener('click', digitarQuantidade);
 
 // botao de ajuda
 document.getElementById('btn-help').addEventListener('click', terminalHelp);

@@ -1,4 +1,5 @@
 let carrinho = [];
+let resumoCompra = [];
 
 function adicionarProduto(id, quantidade, desconto = 0) {
   const produto = produtos.find(p => p.id == id);
@@ -87,6 +88,81 @@ function atualizarCarrinho() {
 
   document.getElementById('total').innerText = total.toFixed(2);
 }
+//  RESUMO DA COMPRA
+
+function mostrarResumoCompra() {
+  let quantidadeTotal = 0;
+  let valorTotal = 0;
+  let descontoTotal = 0;
+
+  carrinho.forEach(item => {
+    const quantidade = Number(item.qtd) || 0;
+    const preco = Number(item.preco) || 0;
+    const desconto = Number(item.desconto) || 0;
+
+    // Soma todas as quantidades
+    quantidadeTotal += quantidade;
+
+    // Valor bruto do item
+    const valorBruto = preco * quantidade;
+
+    // Valor do desconto do item
+    const valorDesconto = valorBruto * (desconto / 100);
+
+    // Soma os valores
+    valorTotal += valorBruto;
+    descontoTotal += valorDesconto;
+  });
+
+  // Valor final depois dos descontos
+  const valorFinal = valorTotal - descontoTotal;
+
+  /*
+   * ARRAY DO RESUMO
+   */
+  resumoCompra = [
+    {
+      quantidadeTotal: quantidadeTotal,
+      valorTotal: valorTotal,
+      descontoTotal: descontoTotal,
+      valorFinal: valorFinal,
+    },
+  ];
+
+  /*
+   * MOSTRA UMA ÚNICA LINHA NA TABELA
+   */
+  const tabela = document.getElementById('tabelaResumoCompra');
+
+  tabela.innerHTML = `
+        <tr>
+
+            <td>
+                ${quantidadeTotal}
+            </td>
+
+            <td>
+                R$ ${valorTotal.toFixed(2)}
+            </td>
+
+            <td>
+                - R$ ${descontoTotal.toFixed(2)}
+            </td>
+            <td>
+                estacionamento
+            </td>
+
+            <td>
+                <strong>
+                    R$ ${valorFinal.toFixed(2)}
+                </strong>
+            </td>
+
+        </tr>
+    `;
+
+  // console.log('Resumo da compra:', resumoCompra);
+}
 
 function methodMoney() {
   input = document.getElementById('valorPago');
@@ -105,31 +181,82 @@ function digitarCodigoUnid() {
 function digitarCodigo() {
   solicitarCodigoBarras();
 }
-function DigitarQuantidade() {
+function digitarQuantidade() {
   solicitarQtd();
+}
+function digitarTicket() {
+  solicitarTicket();
+  // abrirFinalizacaoCompra();
 }
 
 // troca de layout ao clicar em finalizar compra
 
-// function trocarlayout() {
-//   const btns = document.getElementsByClassName('area-buttons');
+function trocarlayout() {
+  document.getElementById('pinpadModalParking').style.display = 'none';
 
-//   for (const btn of btns) {
-//     btn.style.display = 'none';
-//   }
-//   const payments = document.getElementsByClassName('area-buttons-payment');
-//   for (const payment of payments) {
-//     payment.style.display = 'flex';
-//   }
-// }
+  const card = document.getElementsByClassName('card');
+  for (const cards of card) {
+    cards.style.display = 'none';
+  }
+  const cardcheck = document.getElementsByClassName('cardCheck');
+  for (const cards of cardcheck) {
+    cards.style.display = 'flex';
+  }
+  const btns = document.getElementsByClassName('area-buttons');
+
+  for (const btn of btns) {
+    btn.style.display = 'none';
+  }
+  const payments = document.getElementsByClassName('area-buttons-payment');
+  for (const payment of payments) {
+    payment.style.display = 'flex';
+  }
+  mostrarResumoCompra();
+
+  const footerArea = document.getElementsByClassName('aling-content');
+  for (const payment of footerArea) {
+    const btnFinish = document.getElementById('btnFinalizar');
+    btnFinish.style.display = 'none';
+    payment.style.display = 'flex';
+  }
+}
+// TODO fazer voltar a tela se clicar em cancelar compra 
+function voltarLayout() {
+  const cardO = document.getElementsByClassName('card');
+  for (const cards of cardO) {
+    cards.style.display = 'flex';
+  }
+  const cardcheck = document.getElementsByClassName('cardCheck');
+  for (const cards of cardcheck) {
+    cards.style.display = 'none';
+  }
+  const btns = document.getElementsByClassName('area-buttons');
+
+  for (const btn of btns) {
+    btn.style.display = 'flex';
+  }
+  const payments = document.getElementsByClassName('area-buttons-payment');
+  for (const payment of payments) {
+    payment.style.display = 'none';
+  }
+  const footerArea = document.getElementsByClassName('aling-content');
+  // const btnfinish = document.getElementById('btnFinalizar');
+  for (const payment of footerArea) {
+    const btnFinish = document.getElementById('btnFinalizar');
+    btnFinish.style.display = 'flex';
+    btnFinish.style.alignContent = 'center';
+    payment.style.display = 'flex';
+  }
+}
+
 function irPagamento() {
-  trocarlayout();
   const total = parseFloat(document.getElementById('total').innerText);
 
   if (total == 0) {
     alert('Carrinho vazio.');
-
     return;
+  } else {
+    digitarTicket();
   }
 }
 function finalizarCompra() {
@@ -200,6 +327,11 @@ function solicitarCodigoBarras(callback) {
   document.getElementById('codeNumber').value = '';
   document.getElementById('pinpadModalProd').style.display = 'flex';
 }
+function solicitarTicket(callback) {
+  acaoPendente = callback;
+  document.getElementById('parking').value = '';
+  document.getElementById('pinpadModalParking').style.display = 'flex';
+}
 function digitarCod(numero) {
   const campo = document.getElementById('codeNumber');
 
@@ -212,11 +344,26 @@ function digitarCodUnid(numero) {
 
   if (campo.value.length < 13) {
     campo.value += numero;
+  } else {
+    return;
+  }
+  // TODO colocar funcao de apertar enter automaticamente
+}
+function digitarNum(numero) {
+  const campo = document.getElementById('parking');
+
+  if (campo.value.length < 13) {
+    campo.value += numero;
   }
   // TODO colocar funcao de apertar enter automaticamente
 }
 function apagarCod() {
   const campo = document.getElementById('codeNumber');
+
+  campo.value = campo.value = '';
+}
+function apagarNum() {
+  const campo = document.getElementById('parking');
 
   campo.value = campo.value = '';
 }
@@ -245,6 +392,17 @@ function confirmarCod(quantidade) {
     fecharPinpad();
   }
 }
+function confirmarNum() {
+  const codnumber = document.getElementById('parking').value;
+  if (codnumber.length < 13) {
+    alert('o codigo deve ter 13 digitos, tente novamente');
+    apagarCod();
+  } else {
+    console.log(codnumber, 'cod parking');
+    fecharPinpad();
+  }
+}
+
 //salvar carrinho na sessao
 function salvarCarrinhoSessao() {
   sessionStorage.setItem('carrinho', JSON.stringify(carrinho));
@@ -266,11 +424,6 @@ function carregarCarrinhoSessao() {
   atualizarCarrinho();
 }
 
-///Digitar quantidade do produto antes de ler o codigo de barras
-// function fecharCodProdutos() {
-//   document.getElementById('codigoBarrasFocus').style.display = 'none';
-//   document.getElementById('modal-scanner').style.display = 'none';
-// }
 function solicitarQtd(callback) {
   acaoPendente = callback;
 
@@ -434,6 +587,51 @@ document.addEventListener('keydown', e => {
     e.preventDefault();
   }
 });
+//pinpad das teclas do pinpad do estacionamento
+document.addEventListener('keydown', e => {
+  const modal = document.getElementById('pinpadModalParking');
+
+  // Só funciona quando o PIN Pad estiver aberto
+  if (modal.style.display !== 'flex') return;
+
+  // Números do teclado principal
+  if (e.key >= '0' && e.key <= '9') {
+    digitarNum(e.key);
+    e.preventDefault();
+    return;
+  }
+
+  // Números do teclado numérico (Numpad)
+  if (e.code.startsWith('Numpad')) {
+    const numero = e.code.replace('Numpad', '');
+
+    if (!isNaN(numero)) {
+      digitarNum(numero);
+      e.preventDefault();
+      return;
+    }
+  }
+
+  // Backspace
+  if (e.key === 'Backspace') {
+    apagarNum();
+    e.preventDefault();
+    return;
+  }
+
+  // Enter
+  if (e.key === 'Enter') {
+    confirmarNum();
+    e.preventDefault();
+    return;
+  }
+
+  // Esc
+  if (e.key === 'Escape') {
+    fecharPinpad();
+    e.preventDefault();
+  }
+});
 //foco no pinpad
 function solicitarSenha(callback) {
   acaoPendente = callback;
@@ -446,6 +644,8 @@ function solicitarSenha(callback) {
   // Garante que o teclado funcione imediatamente
   modal.focus();
 }
+//pinpad Estacionamento
+
 ///validador de senha pinpad
 
 let acaoPendente = null;
@@ -486,6 +686,7 @@ function fecharPinpad() {
   document.getElementById('pinpadModalProd').style.display = 'none';
   document.getElementById('pinpadModalQtd').style.display = 'none';
   document.getElementById('pinpadModalProdUnid').style.display = 'none';
+  document.getElementById('pinpadModalParking').style.display = 'none';
 }
 
 //Parte dos operadores para limpar o carrinho passando senha de operador
@@ -529,6 +730,7 @@ function confirmarPin() {
 }
 //adicionar acao das teclas
 document.addEventListener('keydown', e => {
+  1324;
   const modal = document.getElementById('pinpadModal');
 
   // Só funciona quando o PIN Pad estiver aberto
