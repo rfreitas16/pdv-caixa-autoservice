@@ -116,6 +116,10 @@ function mostrarResumoCompra() {
 
   // Valor final depois dos descontos
   const valorFinal = valorTotal - descontoTotal;
+  // valor final com estacionamento
+  const valorEstacionamento =
+    estacionamento.length > 0 ? Number(estacionamento[0].valor) : 0;
+  const totalFinal = valorFinal + valorEstacionamento;
 
   /*
    * ARRAY DO RESUMO
@@ -125,7 +129,7 @@ function mostrarResumoCompra() {
       quantidadeTotal: quantidadeTotal,
       valorTotal: valorTotal,
       descontoTotal: descontoTotal,
-      valorFinal: valorFinal,
+      valorFinal: totalFinal,
     },
   ];
 
@@ -149,18 +153,23 @@ function mostrarResumoCompra() {
                 - R$ ${descontoTotal.toFixed(2)}
             </td>
             <td>
-                estacionamento
-            </td>
-
-            <td>
                 <strong>
                     R$ ${valorFinal.toFixed(2)}
+                </strong>
+            </td>
+            <td>
+                R$ ${valorEstacionamento.toFixed(2)}
+            </td>
+
+               <td>
+                <strong>
+                    R$ ${totalFinal.toFixed(2)}
                 </strong>
             </td>
 
         </tr>
     `;
-
+  document.getElementById('totalCarrinho').innerText = totalFinal.toFixed(2);
   // console.log('Resumo da compra:', resumoCompra);
 }
 
@@ -173,6 +182,7 @@ function limparCarrinho() {
     sessionStorage.removeItem('carrinho');
     carrinho = [];
     atualizarCarrinho();
+    voltarLayout();
   });
 }
 function digitarCodigoUnid() {
@@ -220,7 +230,7 @@ function trocarlayout() {
     payment.style.display = 'flex';
   }
 }
-// TODO fazer voltar a tela se clicar em cancelar compra 
+
 function voltarLayout() {
   const cardO = document.getElementsByClassName('card');
   for (const cards of cardO) {
@@ -352,8 +362,12 @@ function digitarCodUnid(numero) {
 function digitarNum(numero) {
   const campo = document.getElementById('parking');
 
-  if (campo.value.length < 13) {
+  if (campo.value.length < 6) {
     campo.value += numero;
+  }
+  if (campo.value.length === 6) {
+    confirmarNum();
+    trocarlayout();
   }
   // TODO colocar funcao de apertar enter automaticamente
 }
@@ -394,13 +408,61 @@ function confirmarCod(quantidade) {
 }
 function confirmarNum() {
   const codnumber = document.getElementById('parking').value;
-  if (codnumber.length < 13) {
-    alert('o codigo deve ter 13 digitos, tente novamente');
+  // `EST-${numero}`
+  if (codnumber.length < 6) {
+    alert('o codigo deve ter 6 digitos, tente novamente');
     apagarCod();
   } else {
     console.log(codnumber, 'cod parking');
+    buscarCodigoEstacionamento();
+    registrarSaidaEstacionamento();
     fecharPinpad();
   }
+}
+
+// TODO verificar se o codigo existe
+
+function codigoExiste(codigo) {
+
+    const registro = estacionamento.find(
+        item => item.codigo === codigo
+    );
+
+    return registro !== undefined;
+}
+function buscarCodigoEstacionamento(codigo) {
+  for (const registro of estacionamento) {
+    if (registro.codigo === codigo) {
+      return registro;
+    }
+
+    for (const cobranca of registro.cobrancas || []) {
+      if (cobranca.codigo === codigo) {
+        return {
+          ...registro,
+          cobrancaEncontrada: cobranca,
+        };
+      }
+    }
+  }
+
+  return null;
+}
+function validarCodigoEstacionamento(codigo) {
+  codigo = String(codigo).trim();
+
+  if (!codigo) {
+    return false;
+  }
+
+  const resultado = buscarCodigoEstacionamento(codigo);
+
+  if (!resultado) {
+    alert('Código de estacionamento inválido.');
+    return false;
+  }
+
+  return true;
 }
 
 //salvar carrinho na sessao
@@ -730,7 +792,6 @@ function confirmarPin() {
 }
 //adicionar acao das teclas
 document.addEventListener('keydown', e => {
-  1324;
   const modal = document.getElementById('pinpadModal');
 
   // Só funciona quando o PIN Pad estiver aberto

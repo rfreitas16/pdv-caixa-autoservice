@@ -85,8 +85,9 @@
                     <th>Total de itens</th>
                     <th>Valor em compras</th>
                     <th>Total de descontos</th>
-                    <th>Estacionamento</th>
                     <th>Subtotal</th>
+                    <th>Estacionamento</th>
+                    <th>Total</th>
                   </tr>
                 </thead>
 
@@ -96,7 +97,12 @@
               </table>
               </div>
         </div>
+        <div class="total">
+          Total: R$
+          <span id="totalCarrinho">0.00</span>
+        </div>
       </div>
+
       <div class="area-buttons">
         <div class="align-content-btn">
           <div class="barcode-ico">
@@ -107,6 +113,9 @@
         <button id="btn-codbarnum"><i class="fa-solid fa-barcode"></i>Digitar Código</button>
         <button id="btn-qtd"><i class="fa-solid fa-plus"></i>Digitar Quantidade</button>
         </div>
+        <button type="button"onclick="registrarEntradaEstacionamento()">
+        <i class="fa-solid fa-square-parking"></i>Ticket Estacionamento Entrada
+    </button>
             <button id="btn-help"><i class="fa-solid fa-exclamation"></i>Solicitar Ajuda</button>
       </div>
 
@@ -137,12 +146,88 @@
           <button onclick="digitarNum('0')">0</button>
           <button onclick="confirmarNum()">OK</button>
         </div>
-
-
-
-        <button onclick="trocarlayout()" class="yellow">Sem ticket</button>
+        
+        <button onclick="trocarlayout(),usarSemEstacionamento()" class="yellow">Sem ticket</button>
       </div>
     </div>
+
+<!-- estacionamento antigo  -->
+     <!-- <div>
+        <strong>Valor:</strong>
+        <span id="valorEstacionamento">R$ 0,00</span>
+    </div>
+
+    <button
+        type="button"
+        onclick="registrarEntradaEstacionamento()"
+    >
+        Registrar entrada
+    </button>
+
+    <button
+        type="button"
+        onclick="registrarSaidaEstacionamento()"
+    >
+        Registrar saída
+    </button> -->
+
+    <!-- estacionamento novo  -->
+
+    <!-- <div class="estacionamento-box">
+
+    <h3>Estacionamento</h3>
+
+    <div>
+        <strong>Código:</strong>
+        <span id="codigoEstacionamento">---</span>
+    </div>
+
+    <div>
+        <strong>Entrada:</strong>
+        <span id="horaEntrada">--:--:--</span>
+    </div>
+
+    <div>
+        <strong>Saída:</strong>
+        <span id="horaSaida">--:--:--</span>
+    </div>
+
+    <div>
+        <strong>Tempo:</strong>
+        <span id="tempoEstacionamento">0min</span>
+    </div>
+
+    <div>
+        <strong>Valor:</strong>
+        <span id="valorEstacionamento">
+            R$ 0,00
+        </span>
+    </div>
+
+    <button
+        type="button"
+        onclick="registrarEntradaEstacionamento()"
+    >
+        Registrar entrada
+    </button>
+
+    <button
+        type="button"
+        onclick="registrarSaidaEstacionamento()"
+    >
+        Registrar saída
+    </button>
+
+    <button
+        type="button"
+        onclick="usarSemEstacionamento()"
+    >
+        Sem estacionamento
+    </button>
+
+</div> -->
+
+<!-- </div> -->
       <!-- ---Area dos botoes de pagamento-----  -->
 
       <div class="area-buttons-payment">
@@ -299,7 +384,10 @@
     </div>
 
     <!-- <script src="https://unpkg.com/html5-qrcode"></script> -->
+
     <script src="js/operadores.js"></script>
+    <script src="js/estacionamento.js"></script>
+
     <script src="js/produtos.js"></script>
     <script src="js/carrinho.js"></script>
     <script src="js/app.js"></script>
