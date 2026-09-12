@@ -200,7 +200,6 @@ function digitarTicket() {
 }
 
 // troca de layout ao clicar em finalizar compra
-
 function trocarlayout() {
   document.getElementById('pinpadModalParking').style.display = 'none';
 
@@ -230,7 +229,7 @@ function trocarlayout() {
     payment.style.display = 'flex';
   }
 }
-
+//volta o layout para tela de inicio
 function voltarLayout() {
   const cardO = document.getElementsByClassName('card');
   for (const cards of cardO) {
@@ -367,7 +366,6 @@ function digitarNum(numero) {
   }
   if (campo.value.length === 6) {
     confirmarNum();
-    trocarlayout();
   }
   // TODO colocar funcao de apertar enter automaticamente
 }
@@ -413,34 +411,88 @@ function confirmarNum() {
     alert('o codigo deve ter 6 digitos, tente novamente');
     apagarCod();
   } else {
-    console.log(codnumber, 'cod parking');
-    buscarCodigoEstacionamento();
-    registrarSaidaEstacionamento();
+    buscarEstacionamento(codnumber);
     fecharPinpad();
   }
 }
+function buscarEstacionamento(codnumber) {
+  const input = document.getElementById('parking');
 
-// TODO verificar se o codigo existe
+  const numero = codnumber;
 
+  // Monta o código completo
+  const codigo = 'EST-' + numero;
+
+  const resultado = buscarCodigoEstacionamento(codigo);
+
+  if (!resultado) {
+    alert('Código de estacionamento inválido.\n\n' + 'Tente novamente.');
+
+    input.value = '';
+    input.focus();
+
+    return;
+  }
+  // Código encontrado
+  registrarSaidaEstacionamento(resultado);
+  trocarlayout();
+}
+function solicitarCodigoEstacionamento(codnumber) {
+  let codigo = 'EST-' + codnumber;
+  // console.log(codigo, 'codigo vindo da funcao nova');
+  // console.log(codnumber, 'codinumber vindo da funcao nova');
+
+  while (true) {
+    codigo = prompt('Digite o código do estacionamento:');
+    // codigo = 'EST-' + codnumber;
+    // let codigo = 'EST-' + codnumber;
+    // Cancelou
+    if (codigo === null) {
+      return;
+    }
+
+    codigo = codigo.trim();
+
+    // Código vazio
+    if (codigo === '') {
+      alert('Digite um código.');
+      continue;
+    }
+
+    // Procura o código no array
+    const registro = buscarCodigoEstacionamento(codigo);
+
+    if (!registro) {
+      alert('Código de estacionamento inválido.\n\n' + 'Digite novamente.');
+      // console.log('Código de estacionamento inválido.\n\n' + 'Digite novamente.');
+
+      continue;
+    }
+
+    // Código encontrado
+    registrarSaidaEstacionamento(registro);
+
+    break;
+  }
+}
 function codigoExiste(codigo) {
+  const registro = estacionamento.find(item => item.codigo === codigo);
 
-    const registro = estacionamento.find(
-        item => item.codigo === codigo
-    );
-
-    return registro !== undefined;
+  return registro !== undefined;
 }
 function buscarCodigoEstacionamento(codigo) {
   for (const registro of estacionamento) {
+    // Verifica o código principal
     if (registro.codigo === codigo) {
       return registro;
     }
 
+    // Verifica os códigos de cada período
     for (const cobranca of registro.cobrancas || []) {
       if (cobranca.codigo === codigo) {
         return {
-          ...registro,
-          cobrancaEncontrada: cobranca,
+          registro: registro,
+          cobranca: cobranca,
         };
       }
     }

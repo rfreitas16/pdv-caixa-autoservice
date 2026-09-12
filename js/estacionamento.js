@@ -11,7 +11,6 @@ const valoresEstacionamento = {
   7: 11.0, // 91 até 105
   8: 12.5, // 106 até 120
 };
-
 const valorAdicional15Min = 1.5;
 
 function gerarCodigoEstacionamento() {
@@ -21,7 +20,6 @@ function gerarCodigoEstacionamento() {
 
   return `EST-${numero}`;
 }
-
 function registrarEntradaEstacionamento() {
   const agora = new Date();
   const codigo = gerarCodigoEstacionamento();
@@ -44,23 +42,31 @@ function registrarEntradaEstacionamento() {
   atualizarEstacionamento();
 
   // console.log('Entrada registrada:', agora);
+  alert('Entrada registrada. Seu ticket é: ' + codigo);
 }
-
-function registrarSaidaEstacionamento() {
-  if (estacionamento.length === 0) {
-    alert('Nenhuma entrada de estacionamento registrada.');
+function registrarSaidaEstacionamento(resultado) {
+  if (!resultado) {
     return;
   }
 
-  const registro = estacionamento[0];
+  let registro;
+  let cobranca;
+
+  // Código principal
+  if (resultado.codigo) {
+    registro = resultado;
+  } else {
+    // Código de uma cobrança de 15 minutos
+    registro = resultado.registro;
+    cobranca = resultado.cobranca;
+  }
 
   registro.saida = new Date();
 
   calcularValorEstacionamento();
 
-  atualizarEstacionamento();
-
-  console.log('Saída registrada:', registro);
+  // console.log('Estacionamento encontrado:', registro);
+  // console.log('Cobrança:', cobranca);
 }
 function calcularValorEstacionamento() {
   if (estacionamento.length === 0) {
@@ -138,16 +144,6 @@ function atualizarEstacionamento() {
     valor.textContent = formatarMoeda(registro.valor);
   }
 }
-
-///formatar data\
-function formatarHora(data) {
-  return data.toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-}
-
 function usarSemEstacionamento() {
   estacionamento = [
     {
@@ -161,19 +157,16 @@ function usarSemEstacionamento() {
       tipo: 'sem_estacionamento',
     },
   ];
-
-  document.getElementById('codigoEstacionamento').textContent =
-    'Sem estacionamento';
-
-  document.getElementById('horaEntrada').textContent = '--:--:--';
-
-  document.getElementById('horaSaida').textContent = '--:--:--';
-
-  document.getElementById('tempoEstacionamento').textContent = '0min';
-
-  document.getElementById('valorEstacionamento').textContent = 'R$ 0,00';
 }
-
+///formatar data\
+function formatarHora(data) {
+  return data.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+}
+//formatar tempo
 function formatarTempo(minutos) {
   const horas = Math.floor(minutos / 60);
 
@@ -185,7 +178,7 @@ function formatarTempo(minutos) {
 
   return `${minutosRestantes}min`;
 }
-
+//formatar moeda
 function formatarMoeda(valor) {
   return Number(valor || 0).toLocaleString('pt-BR', {
     style: 'currency',
