@@ -196,7 +196,6 @@ function digitarQuantidade() {
 }
 function digitarTicket() {
   solicitarTicket();
-  // abrirFinalizacaoCompra();
 }
 
 // troca de layout ao clicar em finalizar compra
@@ -347,16 +346,19 @@ function digitarCod(numero) {
   if (campo.value.length < 13) {
     campo.value += numero;
   }
+  if (campo.value.length === 13) {
+    confirmarCod();
+  }
 }
 function digitarCodUnid(numero) {
   const campo = document.getElementById('codeNumberUnid');
 
   if (campo.value.length < 13) {
     campo.value += numero;
-  } else {
-    return;
   }
-  // TODO colocar funcao de apertar enter automaticamente
+  if (campo.value.length === 13) {
+    confirmarCodUnid();
+  }
 }
 function digitarNum(numero) {
   const campo = document.getElementById('parking');
@@ -367,7 +369,6 @@ function digitarNum(numero) {
   if (campo.value.length === 6) {
     confirmarNum();
   }
-  // TODO colocar funcao de apertar enter automaticamente
 }
 function apagarCod() {
   const campo = document.getElementById('codeNumber');
@@ -406,7 +407,6 @@ function confirmarCod(quantidade) {
 }
 function confirmarNum() {
   const codnumber = document.getElementById('parking').value;
-  // `EST-${numero}`
   if (codnumber.length < 6) {
     alert('o codigo deve ter 6 digitos, tente novamente');
     apagarCod();
@@ -899,3 +899,11 @@ function solicitarSenha(callback) {
   // Garante que o teclado funcione imediatamente
   modal.focus();
 }
+// Atalho no F2 para cancelar compra
+window.addEventListener('keydown', function (event) {
+  // Verifica se a tecla pressionada é o F2
+  if (event.key === 'F2') {
+    event.preventDefault();
+    limparCarrinho();
+  }
+});

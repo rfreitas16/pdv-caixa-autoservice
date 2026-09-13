@@ -127,20 +127,19 @@ function terminalHelp() {
   som.play();
 }
 
-function procurarProduto(codigo) {
-  const produto = produtos.find(p => p.codigo === codigo);
+// function procurarProduto(codigo) {
+//   const produto = produtos.find(p => p.codigo === codigo);
 
-  if (!produto) {
-    alert('Código não cadastrado.');
+//   if (!produto) {
+//     alert('Código não cadastrado.');
 
-    return;
-  }
+//     return;
+//   }
 
-  adicionarProduto(produto.id);
-}
+//   adicionarProduto(produto.id);
+// }
 
 //leitor digitando
-
 const leitor = document.getElementById('codigoBarras');
 leitor.maxLength = 13;
 leitor.focus();
@@ -160,12 +159,18 @@ leitor.addEventListener('keydown', function (e) {
 
   leitor.value = '';
 
-  // leitor.focus();
+  leitor.focus();
 });
 
-document.addEventListener('click', () => {
-  // leitor.focus();
-});
+//use a funcao abaixo para enviar automaticamente o codigo ao completar 13 digitos
+
+// leitor.addEventListener('input', () => {
+//   if (leitor.value.length === 13) {
+//     procurarProduto(leitor.value);
+//   }
+// });
+
+// ---------------------------------
 
 function produtCode(codigo) {
   const produto = produtos.find(p => p.codigo === codigo);
@@ -205,14 +210,9 @@ function procurarProdutoPorQtd(codigo) {
     alert('Produto não cadastrado.');
     return;
   }
-
   const quantidade = EnviarQtd();
 
   adicionarProduto(produto.id, quantidade);
-
   // // Depois da venda, volta para 1
-  // quantidadeInput.value = 1;
   quantidade.value = 1;
-
-  document.getElementById('codigoBarras').value = '';
 }
