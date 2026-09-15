@@ -13,7 +13,7 @@
 body {
   background: var(--background);
   padding: 30px;
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
 }
 .fa-solid {
   margin-right: 10px;

@@ -5,6 +5,7 @@ const produtos = [
     nome: 'teste 5kg',
     preco: 28.9,
     desconto: 5,
+    descontoClub: 15,
   },
   {
     id: 10,
@@ -48,6 +49,7 @@ const produtos = [
     nome: 'Pingo de ouro',
     preco: 9.9,
     desconto: 0,
+    descontoClub: 10,
   },
   {
     id: 6,

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Caixa de Mercado</title>
+    <link rel="shortcut icon" href="assets/img/cesto.png" type="image/x-icon">
 
     <link rel="stylesheet" href="css/style.css" />
     <link
@@ -13,6 +14,102 @@
   </head>
 
   <body>
+
+    <div id="telaClub" class="tela-club">
+
+    <div class="club-container">
+
+        <h1>Clube Fidelidade</h1>
+
+        <p>
+            Informe seu CPF para verificar se você participa do Clube.
+        </p>
+
+        <label for="cpfClub">
+            CPF
+        </label>
+
+        <input
+            type="text"
+            id="cpfClub"
+            inputmode="numeric"
+            maxlength="11"
+            autocomplete="off"
+            placeholder="Digite seu CPF"
+        >
+90139930019 <br>
+06848375012
+        <button
+            type="button"
+            onclick="verificarClub()"
+        >
+            Continuar
+        </button>
+
+
+        <div id="mensagemClub"></div>
+
+    </div>
+
+</div>
+
+<div id="telaCarrinho" style="display: none;">
+
+    <!-- seu carrinho atual -->
+
+</div>
+
+<!-- cadastro do cliente  -->
+
+<div
+    id="telaCadastroClub"
+    class="tela-cadastro-club"
+    style="display: none;"
+>
+
+    <div class="cadastro-container">
+
+        <h2>Cadastro Clube Fidelidade</h2>
+
+        <label for="nomeClub">
+            Nome
+        </label>
+
+        <input
+            type="text"
+            id="nomeClub"
+            placeholder="Nome completo"
+        >
+
+        <label for="cpfCadastroClub">
+            CPF
+        </label>
+
+        <input
+            type="text"
+            id="cpfCadastroClub"
+            readonly
+        >
+
+        <button
+            type="button"
+            onclick="cadastrarClienteClub()"
+        >
+            Cadastrar e continuar
+        </button>
+
+        <button
+            type="button"
+            onclick="voltarTelaClub()"
+        >
+            Voltar
+        </button>
+
+    </div>
+
+</div>
+
+<div id="clienteClubInfo"></div>
 
     <div class="container">
       <div class="card">
@@ -387,7 +484,7 @@
 
     <script src="js/operadores.js"></script>
     <script src="js/estacionamento.js"></script>
-
+    <script src="js/club.js"></script>
     <script src="js/produtos.js"></script>
     <script src="js/carrinho.js"></script>
     <script src="js/app.js"></script>

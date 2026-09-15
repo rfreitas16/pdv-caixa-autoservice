@@ -1,6 +1,286 @@
 let carrinho = [];
 let resumoCompra = [];
 
+let clienteClubAtual = null;
+let clienteSemClub = false;
+
+// aceitar somente numeros no cpf
+const cpfClubInput = document.getElementById('cpfClub');
+
+cpfClubInput.addEventListener('input', function () {
+  this.value = this.value.replace(/\D/g, '');
+});
+//verificar se tem 11 digitos
+function validarCPF(cpf) {
+  cpf = String(cpf).replace(/\D/g, '');
+
+  if (cpf.length !== 11) {
+    return false;
+  }
+
+  // Impede CPFs com todos os números iguais
+  if (/^(\d)\1{10}$/.test(cpf)) {
+    return false;
+  }
+
+  let soma = 0;
+
+  for (let i = 0; i < 9; i++) {
+    soma += Number(cpf[i]) * (10 - i);
+  }
+
+  let resto = (soma * 10) % 11;
+
+  if (resto === 10) {
+    resto = 0;
+  }
+
+  if (resto !== Number(cpf[9])) {
+    return false;
+  }
+
+  soma = 0;
+
+  for (let i = 0; i < 10; i++) {
+    soma += Number(cpf[i]) * (11 - i);
+  }
+
+  resto = (soma * 10) % 11;
+
+  if (resto === 10) {
+    resto = 0;
+  }
+
+  return resto === Number(cpf[10]);
+}
+//buscar cpf no club
+function buscarClienteClub(cpf) {
+  return clientesClub.find(
+    cliente => cliente.cpf === cpf && cliente.ativo === true,
+  );
+}
+// verificar o club
+function verificarClub() {
+  const input = document.getElementById('cpfClub');
+
+  const cpf = input.value.trim();
+
+  if (!validarCPF(cpf)) {
+    alert('Digite um CPF válido.');
+
+    input.focus();
+
+    console.log('CLIENTES:', clientesClub);
+    console.log('CPF DIGITADO:', cpf);
+    console.log('CLIENTE ENCONTRADO:', cliente);
+
+    return;
+  }
+
+  const cliente = buscarClienteClub(cpf);
+
+  if (cliente) {
+    clienteClubAtual = cliente;
+    clienteSemClub = false;
+
+    alert(
+      `Olá, ${cliente.nome}!\n\n` + 'Cliente Clube Fidelidade identificado.',
+    );
+
+    iniciarCarrinho();
+
+    return;
+  }
+
+  /*
+   * CPF não encontrado
+   */
+
+  const cadastrar = confirm(
+    'CPF não encontrado no Clube Fidelidade.\n\n' + 'Deseja se cadastrar?',
+  );
+
+  if (cadastrar) {
+    abrirCadastroClub(cpf);
+  } else {
+    clienteClubAtual = null;
+    clienteSemClub = true;
+
+    iniciarCarrinho();
+  }
+}
+
+// abrir cadastro do cliente
+function abrirCadastroClub(cpf) {
+  document.getElementById('telaClub').style.display = 'none';
+
+  document.getElementById('telaCadastroClub').style.display = 'block';
+
+  document.getElementById('cpfCadastroClub').value = cpf;
+
+  document.getElementById('nomeClub').value = '';
+
+  document.getElementById('nomeClub').focus();
+}
+// cadastrar cliente
+function cadastrarClienteClub() {
+  const nome = document.getElementById('nomeClub').value.trim();
+
+  const cpf = document.getElementById('cpfCadastroClub').value.trim();
+
+  if (!nome) {
+    alert('Digite o nome do cliente.');
+
+    document.getElementById('nomeClub').focus();
+
+    return;
+  }
+
+  const novoCliente = {
+    id: clientesClub.length + 1,
+
+    nome: nome,
+
+    cpf: cpf,
+
+    ativo: true,
+  };
+
+  clientesClub.push(novoCliente);
+
+  clienteClubAtual = novoCliente;
+
+  clienteSemClub = false;
+
+  alert(
+    'Cliente cadastrado com sucesso!\n\n' +
+      'O desconto do Clube será aplicado.',
+  );
+
+  iniciarCarrinho();
+}
+// iniciar carrinho
+
+function iniciarCarrinho() {
+  document.getElementById('telaClub').style.display = 'none';
+
+  document.getElementById('telaCadastroClub').style.display = 'none';
+
+  document.getElementById('telaCarrinho').style.display = 'block';
+
+  atualizarIndicadorClub();
+
+  atualizarCarrinho();
+}
+
+function cancelarCarrinho() {
+  // Atualiza indicador do Clube
+  atualizarIndicadorClub();
+
+  // Volta para a tela do CPF
+  const telaCarrinho = document.getElementById('telaCarrinho');
+
+  const telaClub = document.getElementById('telaClub');
+
+  const telaCadastroClub = document.getElementById('telaCadastroClub');
+
+  const clubInfo = document.getElementById('clienteClubInfo');
+
+  if (telaCarrinho) {
+    telaCarrinho.style.display = 'none';
+  }
+
+  if (telaCadastroClub) {
+    telaCadastroClub.style.display = 'none';
+  }
+
+  if (telaClub) {
+    telaClub.style.display = 'block';
+    clubInfo.style.display = 'none';
+  }
+
+  // Limpa o CPF digitado
+  const cpf = document.getElementById('cpfClub');
+
+  if (cpf) {
+    cpf.value = '';
+    cpf.focus();
+  }
+
+  // Limpa mensagem
+  const mensagem = document.getElementById('mensagemClub');
+
+  if (mensagem) {
+    mensagem.innerHTML = '';
+  }
+
+  console.log('Compra cancelada. Cliente deslogado.');
+}
+
+function atualizarIndicadorClub() {
+  const elemento = document.getElementById('clienteClubInfo');
+
+  if (!elemento) {
+    return;
+  }
+
+  if (clienteClubAtual) {
+    elemento.innerHTML = `
+            ⭐ Clube Fidelidade:
+            <strong>
+                ${clienteClubAtual.nome}
+            </strong>
+        `;
+  } else {
+    elemento.innerHTML = `
+            Cliente sem Clube Fidelidade
+        `;
+  }
+}
+
+// function adicionarProduto(id, quantidade) {
+//   const produto = produtos.find(p => p.id == id);
+
+//   if (!produto) {
+//     alert('Produto não encontrado.');
+
+//     return;
+//   }
+
+//   quantidade = parseInt(quantidade, 10) || 1;
+
+//   const itemExistente = carrinho.find(item => item.id == id);
+
+//   /*
+//    * Só aplica descontoClub se
+//    * existir cliente no Clube
+//    */
+
+//   const descontoClub = clienteClubAtual ? Number(produto.descontoClub) || 0 : 0;
+
+//   if (itemExistente) {
+//     itemExistente.qtd = Number(itemExistente.qtd) + quantidade;
+//   } else {
+//     carrinho.push({
+//       id: produto.id,
+
+//       codigo: produto.codigo,
+
+//       nome: produto.nome,
+
+//       preco: Number(produto.preco),
+
+//       desconto: Number(produto.desconto) || 0,
+
+//       descontoClub: descontoClub,
+
+//       qtd: quantidade,
+//     });
+//   }
+
+//   atualizarCarrinho();
+// }
+//versao nova
 function adicionarProduto(id, quantidade, desconto = 0) {
   const produto = produtos.find(p => p.id == id);
 
@@ -38,55 +318,100 @@ function adicionarProduto(id, quantidade, desconto = 0) {
   salvarCarrinhoSessao();
   atualizarCarrinho();
 }
-function atualizarCarrinho() {
-  const tbody = document.getElementById('carrinho');
 
-  tbody.innerHTML = '';
+function calcularItem(item) {
+  const preco = Number(item.preco) || 0;
+
+  const quantidade = Number(item.qtd) || 0;
+
+  const desconto = Number(item.desconto) || 0;
+
+  const descontoClub = Number(item.descontoClub) || 0;
+
+  const bruto = preco * quantidade;
+
+  // Primeiro desconto
+  const valorDesconto = bruto * (desconto / 100);
+
+  const depoisDesconto = bruto - valorDesconto;
+
+  // Depois desconto Club
+  const valorDescontoClub = clienteClubAtual
+    ? depoisDesconto * (descontoClub / 100)
+    : 0;
+
+  const subtotal = depoisDesconto - valorDescontoClub;
+
+  return {
+    bruto,
+
+    valorDesconto,
+
+    valorDescontoClub,
+
+    totalDescontos: valorDesconto + valorDescontoClub,
+
+    subtotal,
+  };
+}
+
+function atualizarCarrinho() {
+  const tabela = document.getElementById('carrinho');
+
+  tabela.innerHTML = '';
 
   let total = 0;
 
   carrinho.forEach(item => {
-    const preco = Number(item.preco);
-    const quantidade = Number(item.qtd);
-    const desconto = Number(item.desconto) || 0;
+    const calculo = calcularItem(item);
 
-    // Valor bruto
-    const subtotalBruto = preco * quantidade;
+    total += calculo.subtotal;
 
-    // Valor do desconto
-    const valorDesconto = subtotalBruto * (desconto / 100);
+    const linha = document.createElement('tr');
 
-    // Subtotal final com desconto
-    const subtotal = subtotalBruto - valorDesconto;
-
-    total += subtotal;
-
-    tbody.innerHTML += `
-        <tr>
-            <td>${item.nome}</td>
-            <td>R$ ${item.preco.toFixed(2)}</td>
-            <td>${item.qtd}</td>
+    linha.innerHTML = `
             <td>
-               ${item.desconto && item.desconto > 0 ? item.desconto + '%' : 'Sem desconto'}
+                ${item.nome}
+            </td>
+            <td>
+                ${formatarMoeda(item.preco)}
+            </td>
+            <td>
+                ${item.qtd}
+            </td>
+
+                        <td>
+
+                ${item.desconto > 0 ? `${item.desconto}%` : 'Sem desconto'}
+
+                ${
+                  clienteClubAtual && item.descontoClub > 0
+                    ? `
+                            <br>
+                            <small>
+                                Club: ${item.descontoClub}%
+                            </small>
+                        `
+                    : ''
+                }
+
             </td>
 
             <td>
-            ${
-              desconto > 0
-                ? `<strong>R$ ${subtotal.toFixed(2)}</strong>`
-                : `<strong>R$ ${subtotal.toFixed(2)}</strong>`
-            }
+                ${formatarMoeda(calculo.subtotal)}
             </td>
-            <td>
-        <button id="cancelar" onclick="removerProduto(${item.id})">
+
+             <td>
+       <button id="cancelar" onclick="removerProduto(${item.id})">
             ❌
         </button>
-    </td>
-        </tr>
+            </td>
         `;
+
+    tabela.appendChild(linha);
   });
 
-  document.getElementById('total').innerText = total.toFixed(2);
+  document.getElementById('total').textContent = formatarMoeda(total);
 }
 //  RESUMO DA COMPRA
 
@@ -99,6 +424,7 @@ function mostrarResumoCompra() {
     const quantidade = Number(item.qtd) || 0;
     const preco = Number(item.preco) || 0;
     const desconto = Number(item.desconto) || 0;
+    const descontoClub = Number(item.descontoClub) || 0;
 
     // Soma todas as quantidades
     quantidadeTotal += quantidade;
@@ -109,9 +435,22 @@ function mostrarResumoCompra() {
     // Valor do desconto do item
     const valorDesconto = valorBruto * (desconto / 100);
 
+    // Primeiro desconto
+
+    const depoisDesconto = valorBruto - valorDesconto;
+
+    // Depois desconto Club
+
+    const valorDescontoClub = clienteClubAtual
+      ? depoisDesconto * (descontoClub / 100)
+      : 0;
+
+    // const subtotal = depoisDesconto - valorDescontoClub;
+
     // Soma os valores
     valorTotal += valorBruto;
-    descontoTotal += valorDesconto;
+
+    descontoTotal += valorDesconto + valorDescontoClub;
   });
 
   // Valor final depois dos descontos
@@ -181,6 +520,8 @@ function limparCarrinho() {
   solicitarSenha(() => {
     sessionStorage.removeItem('carrinho');
     carrinho = [];
+    resumoCompra = [];
+    cancelarCarrinho();
     atualizarCarrinho();
     voltarLayout();
   });
@@ -220,6 +561,8 @@ function trocarlayout() {
     payment.style.display = 'flex';
   }
   mostrarResumoCompra();
+
+  // TODO ver bug de quando volta o layout nao calcula o estacionamento nem total
 
   const footerArea = document.getElementsByClassName('aling-content');
   for (const payment of footerArea) {
