@@ -4,12 +4,9 @@ let resumoCompra = [];
 let clienteClubAtual = null;
 let clienteSemClub = false;
 
-// aceitar somente numeros no cpf
-const cpfClubInput = document.getElementById('cpfClub');
-
-cpfClubInput.addEventListener('input', function () {
-  this.value = this.value.replace(/\D/g, '');
-});
+function recarregarPagina() {
+  window.location.reload();
+}
 //verificar se tem 11 digitos
 function validarCPF(cpf) {
   cpf = String(cpf).replace(/\D/g, '');
@@ -60,23 +57,11 @@ function buscarClienteClub(cpf) {
   );
 }
 // verificar o club
-function verificarClub() {
-  const input = document.getElementById('cpfClub');
-
-  const cpf = input.value.trim();
-
+function verificarClub(cpf) {
   if (!validarCPF(cpf)) {
     alert('Digite um CPF válido.');
-
-    input.focus();
-
-    console.log('CLIENTES:', clientesClub);
-    console.log('CPF DIGITADO:', cpf);
-    console.log('CLIENTE ENCONTRADO:', cliente);
-
     return;
   }
-
   const cliente = buscarClienteClub(cpf);
 
   if (cliente) {
@@ -88,77 +73,133 @@ function verificarClub() {
     );
 
     iniciarCarrinho();
+    cartHomePage();
 
     return;
-  }
-
-  /*
-   * CPF não encontrado
-   */
-
-  const cadastrar = confirm(
-    'CPF não encontrado no Clube Fidelidade.\n\n' + 'Deseja se cadastrar?',
-  );
-
-  if (cadastrar) {
-    abrirCadastroClub(cpf);
   } else {
-    clienteClubAtual = null;
-    clienteSemClub = true;
-
-    iniciarCarrinho();
-  }
-}
-
-// abrir cadastro do cliente
-function abrirCadastroClub(cpf) {
-  document.getElementById('telaClub').style.display = 'none';
-
-  document.getElementById('telaCadastroClub').style.display = 'block';
-
-  document.getElementById('cpfCadastroClub').value = cpf;
-
-  document.getElementById('nomeClub').value = '';
-
-  document.getElementById('nomeClub').focus();
-}
-// cadastrar cliente
-function cadastrarClienteClub() {
-  const nome = document.getElementById('nomeClub').value.trim();
-
-  const cpf = document.getElementById('cpfCadastroClub').value.trim();
-
-  if (!nome) {
-    alert('Digite o nome do cliente.');
-
-    document.getElementById('nomeClub').focus();
-
+    /*
+     * CPF não encontrado
+     */
+    const cadastrar = alert(
+      'CPF não encontrado no Clube Fidelidade.\n\n' +
+        'Cadastre-se ou inicie sem clube',
+    );
     return;
   }
+}
+// TODO fazer salvar novo usuario
 
-  const novoCliente = {
-    id: clientesClub.length + 1,
+//verificar novo cliente se ja existe
+function verificarNewClub(cpf) {
+  const nome = document.getElementById('newcelclub').value.trim();
+  const cliente = buscarClienteClub(cpf);
 
-    nome: nome,
+  if (cliente) {
+    clienteClubAtual = cliente;
+    clienteSemClub = false;
 
-    cpf: cpf,
+    alert('Cliente ja cadastrado. Tente novamente.');
+    errorCadastro();
+  } else {
+    /*
+     * CPF não encontrado
+     */
+    if (!cliente) {
+      const novoCliente = {
+        id: clientesClub.length + 1,
+        nome: nome,
+        cpf: cpf,
+        ativo: true,
+      };
+      clientesClub.push(novoCliente);
+      clienteClubAtual = novoCliente;
+      clienteSemClub = false;
+      alert(
+        'Cliente cadastrado com sucesso!\n\n' +
+          'O desconto do Clube será aplicado.',
+      );
+      fecharPinpad();
+      cartHomePage();
+      iniciarCarrinho();
 
-    ativo: true,
-  };
-
-  clientesClub.push(novoCliente);
-
-  clienteClubAtual = novoCliente;
-
-  clienteSemClub = false;
-
-  alert(
-    'Cliente cadastrado com sucesso!\n\n' +
-      'O desconto do Clube será aplicado.',
-  );
-
+      return;
+    }
+  }
+}
+// sem cliente club
+function noClub() {
+  clienteClubAtual = null;
+  clienteSemClub = true;
+  cartHomePage();
   iniciarCarrinho();
 }
+// abrir cadastro do cliente
+function abrirCadastroClub() {
+  document.getElementById('initialOptions').style.display = 'none';
+  document.getElementById('telaClub').style.display = 'none';
+  // document.getElementById('telaCadastroClub').style.display = 'flex';
+  document.getElementById('telaCadastroClub').style.display = 'flex';
+
+  // document.getElementById('outrocadastro').style.display = 'none';
+  // document.getElementById('cpfCadastroClub').value;
+  // document.getElementById('nomeClub').value = '';
+  // document.getElementById('nomeClub').focus();
+}
+// cadastrar cliente
+// function cadastrarClienteClub() {
+//   // const nome = document.getElementById('nomeClub').value.trim();
+//   const nome = document.getElementById('newcelclub').value.trim();
+//   const cpf = document.getElementById('newcpfclub').value.trim();
+//   // const cpf = document.getElementById('newcpfclub').value.trim();
+//   console.log(nome, '', cpf);
+//   verificarClub(cpf);
+
+//   if (!nome) {
+//     alert('Digite o nome do cliente.');
+
+//     document.getElementById('nomeClub').focus();
+
+//     return;
+//   }
+
+//   const novoCliente = {
+//     id: clientesClub.length + 1,
+
+//     nome: nome,
+
+//     cpf: cpf,
+
+//     ativo: true,
+//   };
+
+//   clientesClub.push(novoCliente);
+
+//   clienteClubAtual = novoCliente;
+
+//   clienteSemClub = false;
+
+//   alert(
+//     'Cliente cadastrado com sucesso!\n\n' +
+//       'O desconto do Clube será aplicado.',
+//   );
+//   fecharPinpad();
+//   cartHomePage();
+//   iniciarCarrinho();
+// }
+
+// cadastrar novo cliente com telefone
+function cadastrarClienteClub() {
+  const cpf = document.getElementById('newcpfclub').value.trim();
+
+  if (!validarCPF(cpf)) {
+    alert('Digite um CPF válido');
+    recarregarPagina();
+
+    return;
+  }
+  verificarNewClub(cpf);
+}
+
 // iniciar carrinho
 
 function iniciarCarrinho() {
@@ -412,6 +453,10 @@ function atualizarCarrinho() {
   });
 
   document.getElementById('total').textContent = formatarMoeda(total);
+  // document.getElementById('total').textContent = (total);
+  //   document.getElementById('total').textContent = total
+  //     .toFixed(2)
+  //     .replace('.', ',');
 }
 //  RESUMO DA COMPRA
 
@@ -516,16 +561,82 @@ function methodMoney() {
   input = document.getElementById('valorPago');
   input.style.display = 'block';
 }
+
 function limparCarrinho() {
   solicitarSenha(() => {
-    sessionStorage.removeItem('carrinho');
+    // Limpa o carrinho
     carrinho = [];
+
+    sessionStorage.removeItem('carrinho');
+
+    // Desloga o cliente Club
+    clienteClubAtual = null;
+    clienteSemClub = false;
+
+    // Limpa informações da compra
     resumoCompra = [];
-    cancelarCarrinho();
+
+    sessionStorage.removeItem('resumoCompra');
+
+    // Atualiza carrinho
     atualizarCarrinho();
-    voltarLayout();
+
+    // Limpa campos de pagamento
+    const troco = document.getElementById('troco');
+    const valorPago = document.getElementById('valorPago');
+
+    if (troco) {
+      troco.innerHTML = '';
+    }
+
+    if (valorPago) {
+      valorPago.value = '';
+    }
+
+    // Atualiza indicador do Clube
+    atualizarIndicadorClub();
+
+    // Volta para a tela do CPF
+
+    bgHomeOptions();
+    recarregarPagina();
+    // const telaCarrinho = document.getElementById('telaCarrinho');
+
+    // const telaClub = document.getElementById('telaClub');
+
+    // const telaCadastroClub = document.getElementById('telaCadastroClub');
+
+    // if (telaCarrinho) {
+    //   telaCarrinho.style.display = 'none';
+    // }
+
+    // if (telaCadastroClub) {
+    //   telaCadastroClub.style.display = 'none';
+    // }
+
+    // if (telaClub) {
+    //   telaClub.style.display = 'block';
+    // }
+
+    // Limpa o CPF digitado
+    const cpf = document.getElementById('club');
+
+    if (cpf) {
+      cpf.value = '';
+      // cpf.focus();
+    }
+
+    // Limpa mensagem
+    const mensagem = document.getElementById('mensagemClub');
+
+    if (mensagem) {
+      mensagem.innerHTML = '';
+    }
+
+    console.log('Compra cancelada. Cliente deslogado.');
   });
 }
+
 function digitarCodigoUnid() {
   solicitarCodigoBarrasUnid();
 }
@@ -538,9 +649,14 @@ function digitarQuantidade() {
 function digitarTicket() {
   solicitarTicket();
 }
+function digitarNovoCpf() {
+  solicitarNewCpfClub();
+}
 
 // troca de layout ao clicar em finalizar compra
 function trocarlayout() {
+  document.getElementById('btnBack').style.display = 'flex';
+  document.getElementById('btnBackHome').style.display = 'none';
   document.getElementById('pinpadModalParking').style.display = 'none';
 
   const card = document.getElementsByClassName('card');
@@ -600,8 +716,11 @@ function voltarLayout() {
   }
 }
 
+// TODO arrumar aqui esta passando sem itens no carrinho
 function irPagamento() {
   const total = parseFloat(document.getElementById('total').innerText);
+  console.log(total);
+  console.log(typeof total);
 
   if (total == 0) {
     alert('Carrinho vazio.');
@@ -664,6 +783,26 @@ function cancelarItem(id) {
   carrinho = carrinho.filter(item => item.id !== id);
   atualizarCarrinho();
 }
+//iniciar operacao com Cliente CLUB
+function solicitarCpfClub(callback) {
+  acaoPendente = callback;
+  document.getElementById('club').value = '';
+  document.getElementById('pinpadModalClub').style.display = 'flex';
+}
+
+// Cadastro de club
+function solicitarCelClub(callback) {
+  acaoPendente = callback;
+  abrirCadastroClub();
+  document.getElementById('newcelclub').value = '';
+  document.getElementById('pinpadModalCelClub').style.display = 'flex';
+}
+function solicitarNewCpfClub(callback) {
+  acaoPendente = callback;
+  document.getElementById('newcpfclub').value = '';
+  document.getElementById('pinpadModalNewCpfClub').style.display = 'flex';
+}
+
 //Digitar o codigo de barras com pinpad
 
 function solicitarCodigoBarrasUnid(callback) {
@@ -678,11 +817,13 @@ function solicitarCodigoBarras(callback) {
   document.getElementById('codeNumber').value = '';
   document.getElementById('pinpadModalProd').style.display = 'flex';
 }
+//Digitar codigo de estacionamento
 function solicitarTicket(callback) {
   acaoPendente = callback;
   document.getElementById('parking').value = '';
   document.getElementById('pinpadModalParking').style.display = 'flex';
 }
+//Digitar codigo do produto
 function digitarCod(numero) {
   const campo = document.getElementById('codeNumber');
 
@@ -748,6 +889,26 @@ function confirmarCod(quantidade) {
     fecharPinpad();
   }
 }
+function confirmarNewCel() {
+  const telefone = document.getElementById('newcelclub').value;
+  if (telefone.length < 11) {
+    alert('numero de telefone invalido, digite novamente');
+    apagarCelClub();
+  } else {
+    confirmarNewCpf(telefone);
+    fecharPinpad();
+  }
+}
+function confirmarNewCpf(telefone) {
+  const codnumber = document.getElementById('newcpfclub').value;
+  if (codnumber.length < 11) {
+    alert('o cpf é invalido, digite novamente');
+    apagarNewCpfClub();
+  } else {
+    cadastrarClienteClub(codnumber, telefone);
+    fecharPinpad();
+  }
+}
 function confirmarNum() {
   const codnumber = document.getElementById('parking').value;
   if (codnumber.length < 6) {
@@ -758,6 +919,48 @@ function confirmarNum() {
     fecharPinpad();
   }
 }
+function confirmarClub() {
+  const codnumber = document.getElementById('club').value;
+  if (codnumber.length < 11) {
+    alert('Cpf inválido, tente novamente SINGLE');
+    apagarClub();
+  } else {
+    verificarClub(codnumber);
+    fecharPinpad();
+  }
+}
+
+function confirmarNewClub() {
+  const cpf = document.getElementById('newcpfclub').value;
+  if (cpf.length < 11) {
+    alert('Cpf inválido, tente novamente');
+    apagarNewCpfClub();
+
+    return;
+  } else {
+    validarCPF(cpf);
+    verificarNewClub(cpf);
+    fecharPinpad();
+  }
+}
+//
+function apagarClub() {
+  const campo = document.getElementById('club');
+  campo.value = campo.value = '';
+}
+
+//cadastro club
+function apagarCelClub() {
+  const campo = document.getElementById('newcelclub');
+
+  campo.value = campo.value = '';
+}
+function apagarNewCpfClub() {
+  const campo = document.getElementById('newcpfclub');
+
+  campo.value = campo.value = '';
+}
+
 function buscarEstacionamento(codnumber) {
   const input = document.getElementById('parking');
 
@@ -893,6 +1096,80 @@ function digitarQtd(numero) {
     campo.value += numero;
   }
 }
+function digitarClub(numero) {
+  const campo = document.getElementById('club');
+
+  // Não permite mais de 11 dígitos
+  if (campo.value.length >= 11) {
+    return;
+  }
+
+  campo.value += numero;
+
+  // Ao completar 11  dígitos, confirma automaticamente
+  if (campo.value.length === 11) {
+    confirmarClub();
+    // Pequeno atraso para o operador visualizar o último dígito
+    // setTimeout(() => {
+    //   confirmarClub();
+    // }, 150);
+  }
+}
+
+function validarTelefone(telefone) {
+  const numeroLimpo = telefone.replace(/\D/g, '');
+
+  // Verifica se todos os dígitos são iguais
+  if (/^(\d)\1+$/.test(numeroLimpo)) {
+    return false;
+  }
+
+  // Valida o formato padrão (DDD + 8 ou 9 dígitos)
+  const regexTelefone = /^[1-9]{2}(9?[0-9]{8})$/;
+  return regexTelefone.test(numeroLimpo);
+}
+
+// Função para testar e aplicar as condicionais do telefone
+function processarTelefone(telefoneInput) {
+  if (validarTelefone(telefoneInput)) {
+    return true;
+  } else {
+    // --- CASO INVÁLIDO ---
+    alert('Telefone invalido\n\n' + 'Tente novamente');
+    recarregarPagina();
+    return false;
+  }
+}
+
+function digitarCelClub(numero) {
+  const campo = document.getElementById('newcelclub');
+  // Não permite mais de 11 dígitos
+  if (campo.value.length >= 11) {
+    return;
+  }
+  campo.value += numero;
+  // Ao completar 11  dígitos, confirma automaticamente
+  if (campo.value.length === 11) {
+    setTimeout(() => {
+      processarTelefone(campo.value);
+      fecharPinpad();
+      digitarNovoCpf();
+    }, 1500);
+  }
+}
+function digitarNewCpfClub(numero) {
+  const campo = document.getElementById('newcpfclub');
+  // Não permite mais de 11 dígitos
+  if (campo.value.length >= 11) {
+    return;
+  }
+  campo.value += numero;
+  // Ao completar 11  dígitos, confirma automaticamente
+  if (campo.value.length === 11) {
+    confirmarNewCpf();
+    fecharPinpad();
+  }
+}
 function apagarQtd() {
   const campo = document.getElementById('productQtd');
   campo.value = campo.value = '';
@@ -909,6 +1186,161 @@ function EnviarQtd() {
     return quantidade;
   }
 }
+
+function EnviarCel() {
+  const inputcelular = document.getElementById('newcelclub');
+  console.log(inputcelular.value);
+  if (inputcelular.value >= 11) {
+    alert('digite um numero de telefone');
+
+    apagarCelClub();
+  } else {
+    const celular = parseInt(inputcelular.value) >= 11;
+    fecharPinpad();
+    digitarNovoCpf();
+    return celular;
+  }
+}
+
+//pinpad numero telefone
+document.addEventListener('keydown', e => {
+  const modal = document.getElementById('pinpadModalCelClub');
+
+  // Só funciona quando o PIN Pad estiver aberto
+  if (modal.style.display !== 'flex') return;
+
+  // Números do teclado principal
+  if (e.key >= '0' && e.key <= '9') {
+    digitarCelClub(e.key);
+    e.preventDefault();
+    return;
+  }
+
+  // Números do teclado numérico (Numpad)
+  if (e.code.startsWith('Numpad')) {
+    const numero = e.code.replace('Numpad', '');
+
+    if (!isNaN(numero)) {
+      digitarCelClub(numero);
+      e.preventDefault();
+      return;
+    }
+  }
+
+  // Backspace
+  if (e.key === 'Backspace') {
+    apagarCelClub();
+    e.preventDefault();
+    return;
+  }
+
+  // Enter
+  if (e.key === 'Enter') {
+    // EnviarCel();
+    confirmarNewCel();
+    e.preventDefault();
+    return;
+  }
+
+  // Esc
+  if (e.key === 'Escape') {
+    fecharPinpad();
+    cancelCadastro();
+    e.preventDefault();
+  }
+});
+//pinpad novo cpf cliente- cadastro
+document.addEventListener('keydown', e => {
+  const modal = document.getElementById('pinpadModalNewCpfClub');
+
+  // Só funciona quando o PIN Pad estiver aberto
+  if (modal.style.display !== 'flex') return;
+
+  // Números do teclado principal
+  if (e.key >= '0' && e.key <= '9') {
+    digitarNewCpfClub(e.key);
+    e.preventDefault();
+    return;
+  }
+
+  // Números do teclado numérico (Numpad)
+  if (e.code.startsWith('Numpad')) {
+    const numero = e.code.replace('Numpad', '');
+
+    if (!isNaN(numero)) {
+      digitarNewCpfClub(numero);
+      e.preventDefault();
+      return;
+    }
+  }
+
+  // Backspace
+  if (e.key === 'Backspace') {
+    apagarNewCpfClub();
+    e.preventDefault();
+    return;
+  }
+  // Enter
+  if (e.key === 'Enter') {
+    confirmarNewCpf();
+    e.preventDefault();
+    return;
+  }
+  // Esc
+  if (e.key === 'Escape') {
+    fecharPinpad();
+    cancelCadastro();
+    e.preventDefault();
+  }
+});
+
+// pinpad do cpf
+document.addEventListener('keydown', e => {
+  const modal = document.getElementById('pinpadModalClub');
+
+  // Só funciona quando o PIN Pad estiver aberto
+  if (modal.style.display !== 'flex') return;
+
+  // Números do teclado principal
+  if (e.key >= '0' && e.key <= '9') {
+    digitarClub(e.key);
+    e.preventDefault();
+    return;
+  }
+
+  // Números do teclado numérico (Numpad)
+  if (e.code.startsWith('Numpad')) {
+    const numero = e.code.replace('Numpad', '');
+
+    if (!isNaN(numero)) {
+      digitarClub(numero);
+      e.preventDefault();
+      return;
+    }
+  }
+
+  // Backspace
+  if (e.key === 'Backspace') {
+    apagarClub();
+    e.preventDefault();
+    return;
+  }
+
+  // Enter
+  if (e.key === 'Enter') {
+    confirmarClub();
+    e.preventDefault();
+    return;
+  }
+
+  // Esc
+  if (e.key === 'Escape') {
+    fecharPinpad();
+    bgHomeOptions();
+    e.preventDefault();
+  }
+});
+
 // pinpad do produto unid
 document.addEventListener('keydown', e => {
   const modal = document.getElementById('pinpadModalProdUnid');
@@ -1089,6 +1521,7 @@ document.addEventListener('keydown', e => {
     e.preventDefault();
   }
 });
+
 //foco no pinpad
 function solicitarSenha(callback) {
   acaoPendente = callback;
@@ -1140,6 +1573,9 @@ function apagarPin() {
 }
 function fecharPinpad() {
   document.getElementById('pinpadModal').style.display = 'none';
+  document.getElementById('pinpadModalClub').style.display = 'none';
+  document.getElementById('pinpadModalCelClub').style.display = 'none';
+  document.getElementById('pinpadModalNewCpfClub').style.display = 'none';
   document.getElementById('pinpadModalProd').style.display = 'none';
   document.getElementById('pinpadModalQtd').style.display = 'none';
   document.getElementById('pinpadModalProdUnid').style.display = 'none';
@@ -1248,5 +1684,14 @@ window.addEventListener('keydown', function (event) {
   if (event.key === 'F2') {
     event.preventDefault();
     limparCarrinho();
+  }
+});
+
+// TODO ver aqui depois se nao cancela todas operacoes
+window.addEventListener('keydown', function (event) {
+  // Verifica se a tecla pressionada é o F2
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    recarregarPagina();
   }
 });

@@ -14,13 +14,13 @@ let clientesClub = [
   },
   {
     id: 3,
-    nome: '',
+    nome: 'Fernanda Pires',
     cpf: '90139930019',
+    ativo: true,
   },
   {
     id: 4,
-    nome: 'Maria Oliveira',
+    nome: '',
     cpf: '06848375012',
-    ativo: true,
   },
 ];

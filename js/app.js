@@ -1,13 +1,21 @@
-operadores;
-window.onload = async () => {
+window.onload = function () {
+  topOnLoad();
+  operadoresOnLoad();
+};
+
+function topOnLoad() {
+  // forcar pagina abrir no topo
+  window.scrollTo(0, 0);
+}
+async function operadoresOnLoad() {
   await carregarOperadores();
 
   console.log('Operadores carregados.');
-};
-
+}
 //botoes
 document.getElementById('btnDinheiro').addEventListener('click', methodMoney);
 
+document.getElementById('btnBackHome').addEventListener('click', homePage);
 document.getElementById('btnFinalizar').addEventListener('click', irPagamento);
 
 document.getElementById('btnBack').addEventListener('click', voltarLayout);
@@ -26,6 +34,54 @@ document.getElementById('btn-help').addEventListener('click', terminalHelp);
 document.addEventListener('DOMContentLoaded', () => {
   carregarCarrinhoSessao();
 });
+/// voltar ao topo ao clicar em voltar na pagina do carrinho
+const btnVoltarTopo = document.getElementById('btnBackHome');
+
+btnVoltarTopo.addEventListener('click', () => {
+  window.scrollTo({
+    top: 0,
+  });
+});
+
+//Tela inicial
+
+function homePage() {
+  const divHome = document.getElementById('initialOptions');
+  divHome.style.transitionDelay = '10s';
+  divHome.style.display = 'flex';
+}
+function cartHomePage() {
+  const divHome = document.getElementById('home');
+  const homePage = document.getElementById('initialOptions');
+  homePage.style.display = 'none';
+  divHome.style.display = 'none';
+}
+function bgHomeOptions() {
+  const homePage = document.getElementById('home');
+  const divHome = document.getElementById('initialOptions');
+
+  homePage.style.display = 'flex';
+  divHome.style.display = 'none';
+}
+function retryCpfNovo() {
+  const pinpad = document.getElementById('pinpadModalNewCpfClub');
+
+  pinpad.style.display = 'flex';
+}
+function cancelCadastro() {
+  const homePage = document.getElementById('home');
+  const divHome = document.getElementById('initialOptions');
+  fecharPinpad();
+
+  homePage.style.display = 'flex';
+  divHome.style.display = 'none';
+  const divCadastro = document.getElementById('telaCadastroClub');
+  divCadastro.style.display = 'none';
+}
+function errorCadastro() {
+  const divCadastro = document.getElementById('telaCadastroClub');
+  divCadastro.style.display = 'none';
+}
 
 //leitor por camera
 
@@ -142,7 +198,6 @@ function terminalHelp() {
 //leitor digitando
 const leitor = document.getElementById('codigoBarras');
 leitor.maxLength = 13;
-leitor.focus();
 
 leitor.addEventListener('keydown', function (e) {
   if (e.key !== 'Enter') return;
