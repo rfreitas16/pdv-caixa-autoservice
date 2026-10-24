@@ -185,3 +185,13 @@ function formatarMoeda(valor) {
     currency: 'BRL',
   });
 }
+
+function LimparMoeda(textoMoeda) {
+  const valorTratado = textoMoeda
+    .replace('R$', '') // Remove o símbolo da moeda
+    .replace(/\./g, '') // Remove os pontos de milhar
+    .replace(',', '.') // Troca a vírgula decimal por ponto
+    .trim(); // Remove espaços extras
+
+  return parseFloat(valorTratado);
+}

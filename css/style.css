@@ -317,6 +317,7 @@ td {
   font-size: 28px;
   color: green;
   margin: 20px 0;
+  gap: 10px;
 }
 #valorPago {
   display: none;

@@ -454,9 +454,9 @@ function atualizarCarrinho() {
 
   document.getElementById('total').textContent = formatarMoeda(total);
   // document.getElementById('total').textContent = (total);
-  //   document.getElementById('total').textContent = total
-  //     .toFixed(2)
-  //     .replace('.', ',');
+  // document.getElementById('total').textContent = total
+  //   .toFixed(2)
+  //   .replace('.', ',');
 }
 //  RESUMO DA COMPRA
 
@@ -716,19 +716,18 @@ function voltarLayout() {
   }
 }
 
-// TODO arrumar aqui esta passando sem itens no carrinho
 function irPagamento() {
-  const total = parseFloat(document.getElementById('total').innerText);
-  console.log(total);
-  console.log(typeof total);
+  const total = document.getElementById('total').innerText;
+  const rel = LimparMoeda(total);
 
-  if (total == 0) {
+  if (rel == 0) {
     alert('Carrinho vazio.');
     return;
   } else {
     digitarTicket();
   }
 }
+
 function finalizarCompra() {
   const total = parseFloat(document.getElementById('total').innerText);
 
