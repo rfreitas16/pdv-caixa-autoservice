@@ -7,6 +7,7 @@ let clienteSemClub = false;
 function recarregarPagina() {
   window.location.reload();
 }
+
 //verificar se tem 11 digitos
 function validarCPF(cpf) {
   cpf = String(cpf).replace(/\D/g, '');
@@ -15,7 +16,7 @@ function validarCPF(cpf) {
     return false;
   }
 
-  // Impede CPFs com todos os números iguais
+  // Impede CPFs com números iguais
   if (/^(\d)\1{10}$/.test(cpf)) {
     return false;
   }
@@ -278,49 +279,6 @@ function atualizarIndicadorClub() {
         `;
   }
 }
-
-// function adicionarProduto(id, quantidade) {
-//   const produto = produtos.find(p => p.id == id);
-
-//   if (!produto) {
-//     alert('Produto não encontrado.');
-
-//     return;
-//   }
-
-//   quantidade = parseInt(quantidade, 10) || 1;
-
-//   const itemExistente = carrinho.find(item => item.id == id);
-
-//   /*
-//    * Só aplica descontoClub se
-//    * existir cliente no Clube
-//    */
-
-//   const descontoClub = clienteClubAtual ? Number(produto.descontoClub) || 0 : 0;
-
-//   if (itemExistente) {
-//     itemExistente.qtd = Number(itemExistente.qtd) + quantidade;
-//   } else {
-//     carrinho.push({
-//       id: produto.id,
-
-//       codigo: produto.codigo,
-
-//       nome: produto.nome,
-
-//       preco: Number(produto.preco),
-
-//       desconto: Number(produto.desconto) || 0,
-
-//       descontoClub: descontoClub,
-
-//       qtd: quantidade,
-//     });
-//   }
-
-//   atualizarCarrinho();
-// }
 //versao nova
 function adicionarProduto(id, quantidade, desconto = 0) {
   const produto = produtos.find(p => p.id == id);
@@ -443,7 +401,7 @@ function atualizarCarrinho() {
             </td>
 
              <td>
-       <button id="cancelar" onclick="removerProduto(${item.id})">
+       <button id="cancelar" onclick="solicitarRetiradaProduto(${Number(item.id)})">
             ❌
         </button>
             </td>
@@ -453,12 +411,43 @@ function atualizarCarrinho() {
   });
 
   document.getElementById('total').textContent = formatarMoeda(total);
-  // document.getElementById('total').textContent = (total);
-  // document.getElementById('total').textContent = total
-  //   .toFixed(2)
-  //   .replace('.', ',');
 }
 //  RESUMO DA COMPRA
+
+function solicitarRetiradaProduto(idProduto) {
+  console.log('Solicitação para remover:', idProduto);
+
+  if (existeEstacionamentoNaSessao()) {
+    console.log('Estacionamento encontrado: solicitando PIN.');
+
+    solicitarSenha(() => {
+      removerProdutoCarrinho(idProduto);
+    });
+
+    return;
+  }
+
+  console.log('Sem estacionamento: remoção direta.');
+
+  removerProdutoCarrinho(idProduto);
+}
+function removerProdutoCarrinho(idProduto) {
+  const indice = carrinho.findIndex(
+    item => Number(item.id) === Number(idProduto),
+  );
+
+  if (indice === -1) {
+    alert('Produto não encontrado no carrinho.');
+    return;
+  }
+
+  carrinho.splice(indice, 1);
+
+  salvarCarrinhoSessao();
+  atualizarCarrinho();
+
+  console.log('Produto removido do carrinho.');
+}
 
 function mostrarResumoCompra() {
   let quantidadeTotal = 0;
@@ -500,10 +489,17 @@ function mostrarResumoCompra() {
 
   // Valor final depois dos descontos
   const valorFinal = valorTotal - descontoTotal;
+
+  const pegarEstacionamento =
+    JSON.parse(sessionStorage.getItem('estacionamento')) ?? [];
+  const valorTotalEstacionamento = Number(estacionamento[0]?.valor ?? 0);
+
+  // console.log(pegarEstacionamento, '1');
+  // console.log(valorTotalEstacionamento, 'valor do estacionamento2');
+
   // valor final com estacionamento
-  const valorEstacionamento =
-    estacionamento.length > 0 ? Number(estacionamento[0].valor) : 0;
-  const totalFinal = valorFinal + valorEstacionamento;
+
+  const totalFinal = valorFinal + valorTotalEstacionamento;
 
   /*
    * ARRAY DO RESUMO
@@ -513,6 +509,7 @@ function mostrarResumoCompra() {
       quantidadeTotal: quantidadeTotal,
       valorTotal: valorTotal,
       descontoTotal: descontoTotal,
+      estacionamento: pegarEstacionamento,
       valorFinal: totalFinal,
     },
   ];
@@ -542,7 +539,7 @@ function mostrarResumoCompra() {
                 </strong>
             </td>
             <td>
-                R$ ${valorEstacionamento.toFixed(2)}
+                R$ ${valorTotalEstacionamento.toFixed(2)}
             </td>
 
                <td>
@@ -554,7 +551,11 @@ function mostrarResumoCompra() {
         </tr>
     `;
   document.getElementById('totalCarrinho').innerText = totalFinal.toFixed(2);
-  // console.log('Resumo da compra:', resumoCompra);
+}
+
+function salvarResumoCompra() {
+  sessionStorage.setItem('resumoCompra', JSON.stringify(resumoCompra));
+  salvarEstacionamentoSessao();
 }
 
 function methodMoney() {
@@ -578,6 +579,9 @@ function limparCarrinho() {
 
     sessionStorage.removeItem('resumoCompra');
 
+    //Limpa dados de estacionamento
+    sessionStorage.removeItem('estacionamento');
+
     // Atualiza carrinho
     atualizarCarrinho();
 
@@ -600,23 +604,6 @@ function limparCarrinho() {
 
     bgHomeOptions();
     recarregarPagina();
-    // const telaCarrinho = document.getElementById('telaCarrinho');
-
-    // const telaClub = document.getElementById('telaClub');
-
-    // const telaCadastroClub = document.getElementById('telaCadastroClub');
-
-    // if (telaCarrinho) {
-    //   telaCarrinho.style.display = 'none';
-    // }
-
-    // if (telaCadastroClub) {
-    //   telaCadastroClub.style.display = 'none';
-    // }
-
-    // if (telaClub) {
-    //   telaClub.style.display = 'block';
-    // }
 
     // Limpa o CPF digitado
     const cpf = document.getElementById('club');
@@ -678,7 +665,37 @@ function trocarlayout() {
   }
   mostrarResumoCompra();
 
-  // TODO ver bug de quando volta o layout nao calcula o estacionamento nem total
+  const footerArea = document.getElementsByClassName('aling-content');
+  for (const payment of footerArea) {
+    const btnFinish = document.getElementById('btnFinalizar');
+    btnFinish.style.display = 'none';
+    payment.style.display = 'flex';
+  }
+}
+function trocarlayoutNoParking() {
+  document.getElementById('btnBack').style.display = 'flex';
+  document.getElementById('btnBackHome').style.display = 'none';
+  document.getElementById('pinpadModalParking').style.display = 'none';
+
+  const card = document.getElementsByClassName('card');
+  for (const cards of card) {
+    cards.style.display = 'none';
+  }
+  const cardcheck = document.getElementsByClassName('cardCheck');
+  for (const cards of cardcheck) {
+    cards.style.display = 'flex';
+  }
+  const btns = document.getElementsByClassName('area-buttons');
+
+  for (const btn of btns) {
+    btn.style.display = 'none';
+  }
+  const payments = document.getElementsByClassName('area-buttons-payment');
+  for (const payment of payments) {
+    payment.style.display = 'flex';
+  }
+  registrarEntradaSemEstacionamento();
+  mostrarResumoCompra();
 
   const footerArea = document.getElementsByClassName('aling-content');
   for (const payment of footerArea) {
@@ -709,10 +726,12 @@ function voltarLayout() {
   const footerArea = document.getElementsByClassName('aling-content');
   // const btnfinish = document.getElementById('btnFinalizar');
   for (const payment of footerArea) {
+    const btnCheckout = document.getElementById('btnCheckout');
     const btnFinish = document.getElementById('btnFinalizar');
-    btnFinish.style.display = 'flex';
-    btnFinish.style.alignContent = 'center';
+    btnCheckout.style.display = 'flex';
+    btnCheckout.style.alignContent = 'center';
     payment.style.display = 'flex';
+    btnFinish.style.display = 'none';
   }
 }
 
@@ -724,7 +743,7 @@ function irPagamento() {
     alert('Carrinho vazio.');
     return;
   } else {
-    digitarTicket();
+    abrirCarrinhoSePermitido();
   }
 }
 
@@ -765,6 +784,80 @@ function finalizarCompra() {
 
     `;
 }
+
+function validarAvancoCarrinho() {
+  const carrinhoVazio = carrinho.length === 0;
+  const estacionamentoZerado = existeEstacionamentoNaSessao();
+
+  if (carrinhoVazio && estacionamentoZerado) {
+    alert(
+      'Não é possível avançar! O carrinho está vazio e o estacionamento está com valor zerado.',
+    );
+    return false;
+  }
+
+  return true;
+}
+function avancarCarrinho() {
+  if (!validarAvancoCarrinho()) {
+    return;
+  } else {
+  }
+
+  // Seu código atual para avançar para a próxima etapa
+}
+// funcao antiga funcionando
+// function existeEstacionamentoNaSessao() {
+//   const dados = sessionStorage.getItem('estacionamento');
+//   console.log(dados);
+
+//   if (!dados) {
+//     console.log('Não existe estacionamento na sessão.');
+//     return false;
+//   }
+
+//   try {
+//     const registros = JSON.parse(dados);
+
+//     if (!Array.isArray(registros)) {
+//       return false;
+//     }
+
+//     const existe = registros.some(
+//       registro => registro && registro.tipo === 'estacionamento',
+//     );
+
+//     console.log('Existe estacionamento:', existe);
+
+//     return existe;
+//   } catch (erro) {
+//     console.error('Erro ao ler estacionamento:', erro);
+//     return false;
+//   }
+// }
+
+function existeEstacionamentoNaSessao() {
+  const dados = sessionStorage.getItem('estacionamento');
+
+  if (!dados) return false;
+
+  try {
+    const registros = JSON.parse(dados);
+
+    if (!Array.isArray(registros)) return false;
+
+    return registros.some(
+      registro =>
+        registro &&
+        registro.tipo === 'estacionamento' &&
+        Number(registro.valorTotal) === 0,
+    );
+  } catch (erro) {
+    console.error('Erro ao verificar estacionamento:', erro);
+    return false;
+  }
+}
+
 function removerProduto(id) {
   const indice = carrinho.findIndex(item => item.id === id);
 
@@ -928,7 +1021,6 @@ function confirmarClub() {
     fecharPinpad();
   }
 }
-
 function confirmarNewClub() {
   const cpf = document.getElementById('newcpfclub').value;
   if (cpf.length < 11) {
@@ -942,12 +1034,10 @@ function confirmarNewClub() {
     fecharPinpad();
   }
 }
-//
 function apagarClub() {
   const campo = document.getElementById('club');
   campo.value = campo.value = '';
 }
-
 //cadastro club
 function apagarCelClub() {
   const campo = document.getElementById('newcelclub');
@@ -959,7 +1049,7 @@ function apagarNewCpfClub() {
 
   campo.value = campo.value = '';
 }
-
+// Estacionamento
 function buscarEstacionamento(codnumber) {
   const input = document.getElementById('parking');
 
@@ -1061,7 +1151,6 @@ function validarCodigoEstacionamento(codigo) {
 
   return true;
 }
-
 //salvar carrinho na sessao
 function salvarCarrinhoSessao() {
   sessionStorage.setItem('carrinho', JSON.stringify(carrinho));
@@ -1118,7 +1207,7 @@ function digitarClub(numero) {
 function validarTelefone(telefone) {
   const numeroLimpo = telefone.replace(/\D/g, '');
 
-  // Verifica se todos os dígitos são iguais
+  // Verifica se os dígitos são iguais
   if (/^(\d)\1+$/.test(numeroLimpo)) {
     return false;
   }
@@ -1686,7 +1775,6 @@ window.addEventListener('keydown', function (event) {
   }
 });
 
-// TODO ver aqui depois se nao cancela todas operacoes
 window.addEventListener('keydown', function (event) {
   // Verifica se a tecla pressionada é o F2
   if (event.key === 'Escape') {

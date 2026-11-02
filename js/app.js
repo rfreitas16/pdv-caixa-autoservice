@@ -17,6 +17,8 @@ document.getElementById('btnDinheiro').addEventListener('click', methodMoney);
 
 document.getElementById('btnBackHome').addEventListener('click', homePage);
 document.getElementById('btnFinalizar').addEventListener('click', irPagamento);
+document.getElementById('btnCheckout').addEventListener('click', parkingExist);
+// document.getElementById('btnCheckout').addEventListener('click', irPagamento);
 
 document.getElementById('btnBack').addEventListener('click', voltarLayout);
 
@@ -41,6 +43,23 @@ btnVoltarTopo.addEventListener('click', () => {
   window.scrollTo({
     top: 0,
   });
+});
+
+/// Carregar estacionamento na sessao se tiver
+document.addEventListener('DOMContentLoaded', () => {
+  carregarEstacionamentoSessao();
+
+  const resumoSalvo = sessionStorage.getItem('resumoCompra');
+
+  if (resumoSalvo) {
+    try {
+      resumoCompra = JSON.parse(resumoSalvo);
+    } catch (erro) {
+      console.error('Erro ao recuperar resumo da compra:', erro);
+
+      resumoCompra = [];
+    }
+  }
 });
 
 //Tela inicial
@@ -81,6 +100,87 @@ function cancelCadastro() {
 function errorCadastro() {
   const divCadastro = document.getElementById('telaCadastroClub');
   divCadastro.style.display = 'none';
+}
+
+function parkingExist() {
+  document.getElementById('btnBack').style.display = 'flex';
+  document.getElementById('btnBackHome').style.display = 'none';
+  document.getElementById('pinpadModalParking').style.display = 'none';
+
+  const card = document.getElementsByClassName('card');
+  for (const cards of card) {
+    cards.style.display = 'none';
+  }
+  const cardcheck = document.getElementsByClassName('cardCheck');
+  for (const cards of cardcheck) {
+    cards.style.display = 'flex';
+  }
+  const btns = document.getElementsByClassName('area-buttons');
+
+  for (const btn of btns) {
+    btn.style.display = 'none';
+  }
+  const payments = document.getElementsByClassName('area-buttons-payment');
+  for (const payment of payments) {
+    payment.style.display = 'flex';
+  }
+  avancarCarrinho();
+  
+}
+
+function voltarParaCarrinho() {
+  const telaResumo =
+    // document.getElementById("telaResumoCompra");
+    document.getElementsByClassName('cardCheck');
+
+  const telaCarrinho =
+    // document.getElementById("telaCarrinho");
+    document.getElementsByClassName('cart');
+
+  if (!telaResumo || !telaCarrinho) {
+    console.error('Tela de resumo ou carrinho não encontrada.');
+    return;
+  }
+
+  // Esconde o resumo
+  telaResumo.style.display = 'none';
+
+  // Exibe o carrinho
+  telaCarrinho.style.display = 'flex';
+
+  // Recupera o carrinho salvo na sessão
+  const carrinhoSalvo = sessionStorage.getItem('carrinho');
+
+  if (carrinhoSalvo) {
+    try {
+      carrinho = JSON.parse(carrinhoSalvo);
+    } catch (erro) {
+      console.error('Erro ao recuperar carrinho:', erro);
+    }
+  }
+
+  // Recupera o estacionamento salvo na sessão
+  const estacionamentoSalvo = sessionStorage.getItem('estacionamento');
+
+  if (estacionamentoSalvo) {
+    try {
+      estacionamento = JSON.parse(estacionamentoSalvo);
+
+      // Restaura as datas
+      estacionamento = estacionamento.map(registro => ({
+        ...registro,
+        entrada: registro.entrada ? new Date(registro.entrada) : null,
+        saida: registro.saida ? new Date(registro.saida) : null,
+      }));
+    } catch (erro) {
+      console.error('Erro ao recuperar estacionamento:', erro);
+    }
+  }
+
+  // Atualiza a interface
+  atualizarCarrinho();
+
+  console.log('Retornou ao carrinho.');
 }
 
 //leitor por camera

@@ -38,11 +38,31 @@ function registrarEntradaEstacionamento() {
   ];
   // document.getElementById('codigoEstacionamento').textContent = codigo;
   console.log(codigo, 'codigo do estacionamento');
-
+  salvarEstacionamentoSessao();
   atualizarEstacionamento();
 
   // console.log('Entrada registrada:', agora);
   alert('Entrada registrada. Seu ticket é: ' + codigo);
+}
+function registrarEntradaSemEstacionamento() {
+  estacionamento = [
+    {
+      codigo: null,
+      entrada: null,
+      saida: null,
+      minutos: 0,
+      periodos: 0,
+      cobrancas: [],
+      valor: 0,
+      valorTotal: 0,
+      tipo: 'estacionamento',
+    },
+  ];
+  console.log(estacionamento, 'uso sem estacionamento');
+  salvarEstacionamentoSessao();
+  atualizarEstacionamento();
+
+  return;
 }
 function registrarSaidaEstacionamento(resultado) {
   if (!resultado) {
@@ -62,8 +82,10 @@ function registrarSaidaEstacionamento(resultado) {
   }
 
   registro.saida = new Date();
-
   calcularValorEstacionamento();
+  salvarEstacionamentoSessao();
+
+  alternarTelaEstacionamento();
 
   // console.log('Estacionamento encontrado:', registro);
   // console.log('Cobrança:', cobranca);
@@ -157,7 +179,149 @@ function usarSemEstacionamento() {
       tipo: 'sem_estacionamento',
     },
   ];
+
+  salvarEstacionamentoSessao();
+  // sessionStorage.setItem('estacionamento', JSON.stringify(estacionamento));
+  trocarlayout();
 }
+function existeEstacionamentoAtivo() {
+  return (
+    Array.isArray(estacionamento) &&
+    estacionamento.some(
+      registro =>
+        registro.tipo === 'estacionamento' &&
+        registro.codigo &&
+        registro.entrada &&
+        !registro.saida,
+    )
+  );
+}
+function alternarTelaEstacionamento() {
+  const telaEstacionamento = document.getElementById('telaEstacionamento');
+
+  const telaCarrinho = document.getElementById('telaCarrinho');
+
+  if (!telaEstacionamento || !telaCarrinho) {
+    console.error('Tela de estacionamento ou carrinho não encontrada.');
+    return;
+  }
+
+  if (estacionamentoLiberado()) {
+    telaEstacionamento.style.display = 'none';
+    telaCarrinho.style.display = 'block';
+  } else {
+    telaCarrinho.style.display = 'none';
+    telaEstacionamento.style.display = 'block';
+  }
+}
+
+function estacionamentoLiberado() {
+  if (!Array.isArray(estacionamento) || estacionamento.length === 0) {
+    return false;
+  }
+
+  return estacionamento.some(registro => {
+    // Cliente escolheu não utilizar estacionamento
+    if (registro.tipo === 'sem_estacionamento') {
+      return true;
+    }
+
+    // Estacionamento utilizado e saída registrada
+    if (
+      registro.tipo === 'estacionamento' &&
+      registro.saida !== null &&
+      registro.saida !== undefined
+    ) {
+      return true;
+    }
+
+    return false;
+  });
+}
+function abrirCarrinhoSePermitido() {
+  if (existeEstacionamentoAtivo()) {
+    // trocarlayout();
+    digitarTicket();
+  } else {
+    // trocarlayout();
+    digitarTicket();
+  }
+}
+
+//verificar se tem estacionamento
+function existeEstacionamento() {
+  return (
+    Array.isArray(estacionamento) &&
+    estacionamento.some(
+      registro =>
+        registro.tipo === 'estacionamento' &&
+        registro.codigo &&
+        registro.entrada &&
+        !registro.saida,
+    )
+  );
+}
+// utilizar o verificador de estacionamento
+function verificarSaidaEstacionamento() {
+  if (!existeEstacionamento()) {
+    alert('Nenhum estacionamento ativo encontrado.');
+    return false;
+  }
+
+  return true;
+}
+
+function salvarEstacionamentoSessao() {
+  sessionStorage.setItem('estacionamento', JSON.stringify(estacionamento));
+}
+// function salvarEstacionamentoSessao(registro) {
+//     let estacionamento = JSON.parse(
+//         sessionStorage.getItem("estacionamento") || "[]"
+//     );
+
+//     if (!Array.isArray(estacionamento)) {
+//         estacionamento = [];
+//     }
+
+//     estacionamento.push({
+//         codigo: registro.codigo || `EST-${Date.now()}`,
+//         entrada: registro.entrada || new Date().toISOString(),
+//         saida: registro.saida || null,
+//         minutos: registro.minutos || 0,
+//         periodos: registro.periodos || 0,
+//         cobrancas: registro.cobrancas || [],
+//         valorTotal: Number(registro.valorTotal || 0),
+//         tipo: "estacionamento"
+//     });
+
+//     sessionStorage.setItem(
+//         "estacionamento",
+//         JSON.stringify(estacionamento)
+//     );
+// }
+function carregarEstacionamentoSessao() {
+  const dados = sessionStorage.getItem('estacionamento');
+
+  if (!dados) {
+    estacionamento = [];
+    return;
+  }
+
+  try {
+    estacionamento = JSON.parse(dados);
+
+    estacionamento = estacionamento.map(registro => ({
+      ...registro,
+      entrada: registro.entrada ? new Date(registro.entrada) : null,
+      saida: registro.saida ? new Date(registro.saida) : null,
+    }));
+  } catch (erro) {
+    console.error('Erro ao carregar estacionamento:', erro);
+
+    estacionamento = [];
+  }
+}
+
 ///formatar data\
 function formatarHora(data) {
   return data.toLocaleTimeString('pt-BR', {
@@ -193,5 +357,7 @@ function LimparMoeda(textoMoeda) {
     .replace(',', '.') // Troca a vírgula decimal por ponto
     .trim(); // Remove espaços extras
 
-  return parseFloat(valorTratado);
+  return parseFloat(valorTratado); // converter para numero
 }
+
+// TODO fazer logica de tempo para retirar o veiculo apos validar o estacionamento
