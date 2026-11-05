@@ -279,6 +279,19 @@ function atualizarIndicadorClub() {
         `;
   }
 }
+
+function verificarIdadeProduto(produto) {
+  if (produto.vendaProibidaMenor18 === true) {
+    solicitarSenha(() => {
+      adicionarProduto(produto.id);
+    });
+
+    return;
+  }
+
+  adicionarProduto(produto.id);
+}
+
 //versao nova
 function adicionarProduto(id, quantidade, desconto = 0) {
   const produto = produtos.find(p => p.id == id);
@@ -933,6 +946,7 @@ function digitarCodUnid(numero) {
     campo.value += numero;
   }
   if (campo.value.length === 13) {
+
     confirmarCodUnid();
   }
 }
@@ -967,6 +981,7 @@ function confirmarCodUnid() {
     alert('o codigo deve ter 13 digitos, tente novamente');
     apagarCod();
   } else {
+    // verificarIdadeProduto(codnumber);
     procurarProduto(codnumber);
     fecharPinpad();
   }
@@ -1611,17 +1626,17 @@ document.addEventListener('keydown', e => {
 });
 
 //foco no pinpad
-function solicitarSenha(callback) {
-  acaoPendente = callback;
+// function solicitarSenha(callback) {
+//   acaoPendente = callback;
 
-  document.getElementById('codeNumber').value = '';
+//   document.getElementById('codeNumber').value = '';
 
-  const modal = document.getElementById('pinpadModal');
-  modal.style.display = 'flex';
+//   const modal = document.getElementById('pinpadModal');
+//   modal.style.display = 'flex';
 
-  // Garante que o teclado funcione imediatamente
-  modal.focus();
-}
+//   // Garante que o teclado funcione imediatamente
+//   modal.focus();
+// }
 //pinpad Estacionamento
 
 ///validador de senha pinpad
@@ -1674,23 +1689,64 @@ function fecharPinpad() {
 let validandoPin = false;
 let operadorAutorizado = null;
 
+// function confirmarPin() {
+//   if (validandoPin) {
+//     return;
+//   }
+
+//   validandoPin = true;
+
+//   const senha = document.getElementById('senhaPin').value;
+
+//   const operador = buscarOperadorPorPin(senha);
+
+//   if (!operador) {
+//     alert('Senha inválida.');
+
+//     document.getElementById('senhaPin').value = '';
+
+//     validandoPin = false;
+
+//     return;
+//   }
+
+//   operadorAutorizado = operador;
+
+//   fecharPinpad();
+
+//   if (acaoPendente) {
+//     acaoPendente();
+
+//     acaoPendente = null;
+//   }
+
+//   validandoPin = false;
+
+//   console.log(`${operadorAutorizado.nome} autorizou a operação.`);
+// }
+
+//confirmar pin NOVA
 function confirmarPin() {
-  if (validandoPin) {
+  if (validandoPin) return;
+
+  const campo = document.getElementById('senhaPin');
+  const senha = campo.value.trim();
+
+  // Não validar enquanto não houver 4 dígitos
+  if (!/^\d{4}$/.test(senha)) {
     return;
   }
 
   validandoPin = true;
-
-  const senha = document.getElementById('senhaPin').value;
 
   const operador = buscarOperadorPorPin(senha);
 
   if (!operador) {
     alert('Senha inválida.');
 
-    document.getElementById('senhaPin').value = '';
-
+    campo.value = '';
     validandoPin = false;
+    campo.focus();
 
     return;
   }
@@ -1699,15 +1755,14 @@ function confirmarPin() {
 
   fecharPinpad();
 
-  if (acaoPendente) {
-    acaoPendente();
+  const executarAcao = acaoPendente;
+  acaoPendente = null;
 
-    acaoPendente = null;
+  if (typeof executarAcao === 'function') {
+    executarAcao();
   }
 
   validandoPin = false;
-
-  console.log(`${operadorAutorizado.nome} autorizou a operação.`);
 }
 //adicionar acao das teclas
 document.addEventListener('keydown', e => {

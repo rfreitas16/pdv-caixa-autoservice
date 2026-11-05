@@ -58,7 +58,6 @@ function registrarEntradaSemEstacionamento() {
       tipo: 'estacionamento',
     },
   ];
-  console.log(estacionamento, 'uso sem estacionamento');
   salvarEstacionamentoSessao();
   atualizarEstacionamento();
 
@@ -84,11 +83,6 @@ function registrarSaidaEstacionamento(resultado) {
   registro.saida = new Date();
   calcularValorEstacionamento();
   salvarEstacionamentoSessao();
-
-  alternarTelaEstacionamento();
-
-  // console.log('Estacionamento encontrado:', registro);
-  // console.log('Cobrança:', cobranca);
 }
 function calcularValorEstacionamento() {
   if (estacionamento.length === 0) {
@@ -181,7 +175,6 @@ function usarSemEstacionamento() {
   ];
 
   salvarEstacionamentoSessao();
-  // sessionStorage.setItem('estacionamento', JSON.stringify(estacionamento));
   trocarlayout();
 }
 function existeEstacionamentoAtivo() {
@@ -195,24 +188,6 @@ function existeEstacionamentoAtivo() {
         !registro.saida,
     )
   );
-}
-function alternarTelaEstacionamento() {
-  const telaEstacionamento = document.getElementById('telaEstacionamento');
-
-  const telaCarrinho = document.getElementById('telaCarrinho');
-
-  if (!telaEstacionamento || !telaCarrinho) {
-    console.error('Tela de estacionamento ou carrinho não encontrada.');
-    return;
-  }
-
-  if (estacionamentoLiberado()) {
-    telaEstacionamento.style.display = 'none';
-    telaCarrinho.style.display = 'block';
-  } else {
-    telaCarrinho.style.display = 'none';
-    telaEstacionamento.style.display = 'block';
-  }
 }
 
 function estacionamentoLiberado() {
@@ -274,31 +249,6 @@ function verificarSaidaEstacionamento() {
 function salvarEstacionamentoSessao() {
   sessionStorage.setItem('estacionamento', JSON.stringify(estacionamento));
 }
-// function salvarEstacionamentoSessao(registro) {
-//     let estacionamento = JSON.parse(
-//         sessionStorage.getItem("estacionamento") || "[]"
-//     );
-
-//     if (!Array.isArray(estacionamento)) {
-//         estacionamento = [];
-//     }
-
-//     estacionamento.push({
-//         codigo: registro.codigo || `EST-${Date.now()}`,
-//         entrada: registro.entrada || new Date().toISOString(),
-//         saida: registro.saida || null,
-//         minutos: registro.minutos || 0,
-//         periodos: registro.periodos || 0,
-//         cobrancas: registro.cobrancas || [],
-//         valorTotal: Number(registro.valorTotal || 0),
-//         tipo: "estacionamento"
-//     });
-
-//     sessionStorage.setItem(
-//         "estacionamento",
-//         JSON.stringify(estacionamento)
-//     );
-// }
 function carregarEstacionamentoSessao() {
   const dados = sessionStorage.getItem('estacionamento');
 

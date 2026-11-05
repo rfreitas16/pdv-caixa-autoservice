@@ -125,7 +125,6 @@ function parkingExist() {
     payment.style.display = 'flex';
   }
   avancarCarrinho();
-  
 }
 
 function voltarParaCarrinho() {
@@ -307,7 +306,9 @@ leitor.addEventListener('keydown', function (e) {
   const produto = produtos.find(p => p.codigo === codigo);
 
   if (produto) {
-    adicionarProduto(produto.id);
+    verificarIdadeProduto(produto, () => {
+      adicionarProduto(produto);
+    });
   } else {
     alert('Produto não encontrado.');
   }
